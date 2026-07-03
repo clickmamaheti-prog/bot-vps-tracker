@@ -72,19 +72,15 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         banner_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "banner.jpg")
         with open(banner_path, "rb") as f:
-            await update.message.reply_photo(
-                photo=f,
-                caption=text,
-                reply_markup=InlineKeyboardMarkup(kb),
-                parse_mode="Markdown"
-            )
+            await update.message.reply_photo(photo=f)
     except Exception as e:
-        print(f"Banner error, fallback text: {e}")
-        await update.message.reply_text(
-            text,
-            reply_markup=InlineKeyboardMarkup(kb),
-            parse_mode="Markdown"
-        )
+        print(f"Banner error: {e}")
+    # Send menu text separately so edit_message_text works on callbacks
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(kb),
+        parse_mode="Markdown"
+    )
 
 async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query

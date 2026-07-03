@@ -75,7 +75,7 @@
     </div>
     <div class="info-bar">
         <span>📍 {{ events|length }} event tracking</span>
-        <span>🕐 Terakhir: {{ events[0][4][:19] }}</span>
+        <span>🕐 Terakhir: {{ events[0][3][:19] }}</span>
         <span>📐 {{ '%.6f'|format(events[0][0]) }}, {{ '%.6f'|format(events[0][1]) }}</span>
     </div>
     {% else %}
