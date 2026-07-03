@@ -57,7 +57,8 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🗺 Lihat Peta", callback_data="view_map")],
     ]
     text = (
-        "🚚 *GPS Tracker Bot*\n━━━━━━━━━━━━━━━━━━━━\n\n"
+        "🚚 *GPS Tracker Bot*\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
         "Buat link tracking, kirim ke target,\n"
         "terima notifikasi lokasi otomatis!\n\n"
         "📌 *Fitur:*\n"
@@ -65,9 +66,25 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• Kirim link ke target\n"
         "• Notifikasi lokasi otomatis\n"
         "• Lihat peta & riwayat\n\n"
-        "━━━━━━━━━━━━━━━━━━━━\nPilih menu 👇"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "Pilih menu 👇"
     )
-    await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+    try:
+        banner_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "banner.jpg")
+        with open(banner_path, "rb") as f:
+            await update.message.reply_photo(
+                photo=f,
+                caption=text,
+                reply_markup=InlineKeyboardMarkup(kb),
+                parse_mode="Markdown"
+            )
+    except Exception as e:
+        print(f"Banner error, fallback text: {e}")
+        await update.message.reply_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(kb),
+            parse_mode="Markdown"
+        )
 
 async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
