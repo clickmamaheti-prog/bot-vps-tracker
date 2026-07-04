@@ -9,6 +9,7 @@ cd /root/gps-tracker-bot
 # Config
 export BOT_TOKEN="8845527390:AAH1RZGR9zuYM7Se_O5171QwgnhQ6gs85dY"
 export BASE_URL="${BASE_URL:-http://localhost:5000}"
+export DASHBOARD_TOKEN="${DASHBOARD_TOKEN:-admin123}"
 
 # Kill old processes
 pkill -f "python3 bot.py" 2>/dev/null

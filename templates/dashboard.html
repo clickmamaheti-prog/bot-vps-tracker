@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPS Tracker · Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a12;
+  --bg-secondary: #12121e;
+  --bg-card: #181825;
+  --bg-card-hover: #1e1e32;
+  --border: #1e1e32;
+  --border-hover: #2a2a45;
+  --text-primary: #f1f1f9;
+  --text-secondary: #8b8ba7;
+  --text-tertiary: #5c5c78;
+  --accent-blue: #6366f1;
+  --accent-indigo: #4f46e5;
+  --accent-green: #22c55e;
+  --accent-emerald: #10b981;
+  --accent-orange: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --shimmer-primary: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+  --shadow-glow: 0 0 40px -10px rgba(99,102,241,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ───── Ambient Background ───── */
+.ambient-grid {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.ambient-orbs {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.ambient-orbs .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.orb-1 { width: 400px; height: 400px; background: #6366f1; top: -100px; left: -100px; animation-delay: 0s; }
+.orb-2 { width: 300px; height: 300px; background: #8b5cf6; bottom: -50px; right: -50px; animation-delay: -7s; }
+.orb-3 { width: 250px; height: 250px; background: #06b6d4; top: 50%; left: 50%; animation-delay: -14s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-30px) scale(1.1); }
+  66% { transform: translate(-20px,20px) scale(0.9); }
+}
+
+/* ───── App Shell ───── */
+.app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ───── Top Navigation ───── */
+.nav {
+  background: rgba(10,10,18,0.85);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; gap: 16px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.nav-logo {
+  width: 36px; height: 36px;
+  background: var(--shimmer-primary);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  animation: shimmer 3s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.nav-logo svg { width: 20px; height: 20px; color: white; }
+.nav-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.nav-title span { color: var(--accent-blue); }
+.nav-badge {
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.2);
+  color: var(--accent-blue);
+  padding: 4px 12px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--text-tertiary);
+}
+.nav-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--accent-green);
+}
+.nav-status .pulse {
+  width: 7px; height: 7px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ───── Container ───── */
+.container {
+  max-width: 1280px; margin: 0 auto; padding: 28px 24px;
+  flex: 1; width: 100%;
+}
+
+/* ───── Hero Section ───── */
+.hero {
+  margin-bottom: 36px;
+  animation: fadeUp 0.6s ease-out;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero h1 {
+  font-size: 28px; font-weight: 800;
+  letter-spacing: -0.5px; line-height: 1.2;
+  margin-bottom: 6px;
+}
+.hero h1 .highlight {
+  background: var(--shimmer-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+.hero p {
+  color: var(--text-secondary);
+  font-size: 14px; font-weight: 400;
+}
+
+/* ───── Stats Grid ───── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.stat-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeUp 0.6s ease-out backwards;
+}
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+.stat-card:nth-child(5) { animation-delay: 0.25s; }
+
+.stat-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 40%, rgba(99,102,241,0.1) 60%, transparent 80%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.stat-card .glow-orb {
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.08;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.stat-card:hover .glow-orb {
+  opacity: 0.18;
+  transform: scale(1.3);
+}
+.glow-blue { background: #6366f1; }
+.glow-green { background: #22c55e; }
+.glow-purple { background: #8b5cf6; }
+.glow-orange { background: #f59e0b; }
+.glow-rose { background: #f43f5e; }
+
+.stat-icon {
+  position: relative;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+  transition: transform 0.3s ease;
+}
+.stat-card:hover .stat-icon { transform: scale(1.05); }
+.stat-icon svg { width: 20px; height: 20px; }
+.icon-bg-blue { background: rgba(99,102,241,0.12); color: #818cf8; }
+.icon-bg-green { background: rgba(34,197,94,0.12); color: #4ade80; }
+.icon-bg-purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
+.icon-bg-orange { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.icon-bg-rose { background: rgba(244,63,94,0.12); color: #fb7185; }
+
+.stat-value {
+  font-size: 30px; font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 4px;
+  position: relative;
+}
+.stat-value .prefix { font-size: 16px; font-weight: 600; color: var(--text-secondary); }
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.stat-trend {
+  position: absolute;
+  top: 20px; right: 20px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.trend-up { color: var(--accent-green); background: rgba(34,197,94,0.08); }
+.trend-down { color: var(--accent-rose); background: rgba(244,63,94,0.08); }
+
+/* ───── Section ───── */
+.section {
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease-out backwards;
+}
+.section:nth-child(2) { animation-delay: 0.1s; }
+.section:nth-child(3) { animation-delay: 0.2s; }
+.section:nth-child(4) { animation-delay: 0.3s; }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+}
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.section-title svg { width: 16px; height: 16px; opacity: 0.6; }
+.section-count {
+  background: rgba(99,102,241,0.1);
+  color: var(--accent-blue);
+  padding: 2px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+}
+.section-action {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--accent-blue);
+  text-decoration: none; font-weight: 500;
+  padding: 6px 12px; border-radius: 8px;
+  transition: background 0.2s;
+}
+.section-action:hover { background: rgba(99,102,241,0.08); }
+.section-action svg { width: 14px; height: 14px; }
+
+/* ───── Card ───── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-hover); }
+
+/* ───── Tables ───── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+thead th {
+  padding: 12px 20px;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+}
+tbody td {
+  padding: 14px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-family: 'JetBrains Mono', monospace;
+  transition: background 0.2s;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr {
+  transition: background 0.15s ease;
+}
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+.td-id {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600;
+  color: var(--accent-blue);
+}
+.td-id .hash {
+  width: 24px; height: 24px;
+  background: rgba(99,102,241,0.1);
+  border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  color: var(--accent-blue);
+}
+
+.td-coords {
+  font-size: 12px; font-weight: 500;
+  color: var(--accent-cyan);
+}
+.td-acc {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.td-time {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.td-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500; color: var(--text-primary);
+}
+
+.badge-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-active { background: rgba(34,197,94,0.1); color: #4ade80; }
+.badge-inactive { background: rgba(244,63,94,0.1); color: #fb7185; }
+.badge-active .dot,
+.badge-inactive .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.badge-active .dot { background: #22c55e; }
+.badge-inactive .dot { background: #f43f5e; }
+
+.td-actions {
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-action {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-action svg { width: 13px; height: 13px; }
+.btn-map {
+  background: rgba(99,102,241,0.08);
+  color: #818cf8;
+  border: 1px solid rgba(99,102,241,0.12);
+}
+.btn-map:hover { background: rgba(99,102,241,0.15); }
+.btn-gmaps {
+  background: rgba(34,197,94,0.08);
+  color: #4ade80;
+  border: 1px solid rgba(34,197,94,0.12);
+}
+.btn-gmaps:hover { background: rgba(34,197,94,0.15); }
+
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-tertiary);
+}
+.empty-state svg {
+  width: 48px; height: 48px;
+  opacity: 0.3; margin-bottom: 12px;
+}
+.empty-state p { font-size: 14px; }
+.empty-state .sub { font-size: 12px; margin-top: 4px; color: var(--text-tertiary); opacity: 0.7; }
+
+/* ───── Map Section ───── */
+.map-container {
+  padding: 16px;
+}
+.map-frame {
+  width: 100%; height: 220px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px; overflow: hidden;
+}
+.map-frame iframe {
+  width: 100%; height: 100%; border: none;
+}
+.map-info {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; flex-wrap: wrap; gap: 8px;
+}
+.map-coords {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--accent-cyan);
+}
+.map-meta {
+  font-size: 12px; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 12px;
+}
+
+/* ───── Loading States ───── */
+.loading-row {
+  text-align: center; padding: 40px 20px;
+}
+.loading-spinner {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--text-tertiary); font-size: 13px;
+}
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-state {
+  text-align: center; padding: 40px 20px;
+  color: var(--accent-rose);
+}
+.error-state p { font-size: 13px; margin-bottom: 12px; }
+.btn-retry {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  background: rgba(244,63,94,0.08);
+  border: 1px solid rgba(244,63,94,0.15);
+  color: var(--accent-rose);
+  border-radius: 10px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-retry:hover { background: rgba(244,63,94,0.15); }
+
+/* ───── Empty Data ───── */
+.empty-data {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-tertiary);
+}
+.empty-data svg { width: 40px; height: 40px; opacity: 0.25; margin-bottom: 10px; }
+.empty-data p { font-size: 13px; }
+
+/* ───── Footer ───── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 12px; color: var(--text-tertiary);
+}
+.footer-inner { max-width: 1280px; margin: 0 auto; display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
+.footer a { color: var(--accent-blue); text-decoration: none; }
+.footer .sep { opacity: 0.3; }
+
+/* ───── Number Count Animation ───── */
+@keyframes countIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stat-value { opacity: 0; }
+.stat-value.animated { opacity: 1; animation: countIn 0.4s ease-out; }
+</style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div class="ambient-grid"></div>
+<div class="ambient-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- App -->
+<div class="app">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/dashboard?token={{ token }}">
+        <div class="nav-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="nav-title">GPS<span>Tracker</span></div>
+        <span class="nav-badge">COMMAND CENTER</span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-status">
+          <span class="pulse"></span>
+          Live
+        </div>
+        <div class="nav-time" id="clock">--:--:--</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Monitoring <span class="highlight">Dashboard</span></h1>
+      <p>Real-time GPS tracking analytics and link management</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="glow-orb glow-blue"></div>
+        <div class="stat-icon icon-bg-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16.5 9.4 7.55 4.24a1 1 0 0 0-1.1 0L2 6.5l11 6 11-6-4.45-2.56Z"/>
+            <path d="M2 12.5 13 18l5.5-3.5"/>
+            <path d="M13 18V8.5"/>
+            <path d="M18.5 9.4V14"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="totalLinks">—</div>
+        <div class="stat-label">Total Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="glow-orb glow-green"></div>
+        <div class="stat-icon icon-bg-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="activeLinks">—</div>
+        <div class="stat-label">Active Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="glow-orb glow-purple"></div>
+        <div class="stat-icon icon-bg-purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="totalEvents">—</div>
+        <div class="stat-label">GPS Events</div>
+      </div>
+      <div class="stat-card">
+        <div class="glow-orb glow-orange"></div>
+        <div class="stat-icon icon-bg-orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="todayEvents"><span class="prefix">—</span></div>
+        <div class="stat-label">Today's Events</div>
+      </div>
+      <div class="stat-card">
+        <div class="glow-orb glow-rose"></div>
+        <div class="stat-icon icon-bg-rose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="totalUsers">—</div>
+        <div class="stat-label">Telegram Users</div>
+      </div>
+    </div>
+
+    <!-- Recent Events -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Recent GPS Events
+          <span class="section-count" id="eventCount">0</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Link ID</th>
+                <th>Name</th>
+                <th>Coordinates</th>
+                <th>Accuracy</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="eventsBody">
+              <tr><td colspan="5" class="loading-row">
+                <div class="loading-spinner"><div class="spinner"></div> Loading events...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Links -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          Tracking Links
+          <span class="section-count" id="linkCount">0</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Events</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="linksBody">
+              <tr><td colspan="6" class="loading-row">
+                <div class="loading-spinner"><div class="spinner"></div> Loading links...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Map -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+            <line x1="8" y1="2" x2="8" y2="18"/>
+            <line x1="16" y1="6" x2="16" y2="22"/>
+          </svg>
+          Live Location Overview
+        </div>
+      </div>
+      <div class="card">
+        <div class="map-container" id="mapContent">
+          <div class="loading-row">
+            <div class="loading-spinner"><div class="spinner"></div> Loading map...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span id="footerStatus">● Connecting...</span>
+      <span class="sep">·</span>
+      <a href="https://github.com/clickmamaheti-prog/bot-vps-tracker" target="_blank" rel="noopener">GitHub</a>
+      <span class="sep">·</span>
+      <span>DevCulture &copy;2026</span>
+      <span class="sep">·</span>
+      <span id="lastUpdate" style="font-family:'JetBrains Mono',monospace"></span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const API = '/api/dashboard';
+let TOKEN = '{{ token }}';
+
+// ── Clock ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('id-ID', { hour12: false });
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── Fetch ──
+async function fetchDashboard() {
+  try {
+    const resp = await fetch(`${API}?token=${TOKEN}`);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    render(data);
+  } catch (e) {
+    console.error('Fetch error:', e);
+    document.querySelectorAll('.loading-row').forEach(el => {
+      el.innerHTML = `<td colspan="5" class="error-state">
+        <p>⚠ Connection lost</p>
+        <button class="btn-retry" onclick="fetchDashboard()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Retry
+        </button>
+      </td>`;
+    });
+  }
+}
+
+// ── Animate Count ──
+function animateCount(el, target) {
+  if (!el) return;
+  const current = parseInt(el.textContent) || 0;
+  if (current === target) return;
+  el.classList.remove('animated');
+  // force reflow
+  void el.offsetWidth;
+  el.textContent = target;
+  el.classList.add('animated');
+}
+
+// ── Render ──
+function render(data) {
+  animateCount(document.getElementById('totalLinks'), data.total_links || 0);
+  animateCount(document.getElementById('activeLinks'), data.active_links || 0);
+  animateCount(document.getElementById('totalEvents'), data.total_events || 0);
+  animateCount(document.getElementById('todayEvents'), data.today_events || 0);
+  animateCount(document.getElementById('totalUsers'), data.total_users || 0);
+
+  document.getElementById('eventCount').textContent = data.total_events || 0;
+  document.getElementById('linkCount').textContent = (data.links || []).length;
+  document.getElementById('lastUpdate').textContent = 'Updated ' + (data.generated_at || '');
+  document.getElementById('footerStatus').textContent = '● Online · ' + (data.total_events || 0) + ' events';
+
+  // Recent Events
+  const evs = data.recent_events || [];
+  const evBody = document.getElementById('eventsBody');
+  if (evs.length === 0) {
+    evBody.innerHTML = `<tr><td colspan="5" class="empty-data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p>No tracking events yet</p>
+    </td></tr>`;
+  } else {
+    evBody.innerHTML = evs.map(e => `<tr>
+      <td><span class="td-id"><span class="hash">#</span>${e.tracking_id || '-'}</span></td>
+      <td class="td-name">${e.nama || '—'}</td>
+      <td class="td-coords">${Number(e.latitude).toFixed(6)}<span style="opacity:0.3">, </span>${Number(e.longitude).toFixed(6)}</td>
+      <td><span class="td-acc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> ${e.accuracy || '?'}m</span></td>
+      <td class="td-time">${(e.timestamp || '').slice(0,19) || '-'}</td>
+    </tr>`).join('');
+  }
+
+  // Links
+  const links = data.links || [];
+  const linkBody = document.getElementById('linksBody');
+  if (links.length === 0) {
+    linkBody.innerHTML = `<tr><td colspan="6" class="empty-data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      <p>No tracking links created</p>
+      <div class="sub">Create a link via the Telegram bot to get started</div>
+    </td></tr>`;
+  } else {
+    linkBody.innerHTML = links.map(l => {
+      const isActive = l.is_active;
+      const stClass = isActive ? 'badge-active' : 'badge-inactive';
+      const stText = isActive ? 'Active' : 'Inactive';
+      const mapUrl = `/map/${l.tracking_id}`;
+      const gUrl = l.lat ? `https://www.google.com/maps?q=${l.lat},${l.lng}` : '#';
+      return `<tr>
+        <td><span class="td-id"><span class="hash">#</span>${l.tracking_id}</span></td>
+        <td class="td-name">${l.title || '—'}</td>
+        <td><span class="td-acc" style="font-weight:600;color:var(--accent-blue)">${l.event_count || 0}</span></td>
+        <td><span class="badge-status ${stClass}"><span class="dot"></span> ${stText}</span></td>
+        <td class="td-time">${(l.created_at || '').slice(0,10)}</td>
+        <td>
+          <div class="td-actions">
+            <a href="${mapUrl}" target="_blank" class="btn-action btn-map">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              Map
+            </a>
+            ${l.lat ? `<a href="${gUrl}" target="_blank" class="btn-action btn-gmaps">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              GPS
+            </a>` : ''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Map
+  const mapDiv = document.getElementById('mapContent');
+  if (data.latest_location) {
+    const ll = data.latest_location;
+    mapDiv.innerHTML = `
+      <div class="map-frame">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d${ll.lng}!3d${ll.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1"
+          allowfullscreen="" loading="lazy">
+        </iframe>
+      </div>
+      <div class="map-info">
+        <div class="map-coords"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}</div>
+        <div class="map-meta">
+          <span>🆔 ${ll.tid}</span>
+          <span>🕐 ${(ll.ts || '').slice(0,19)}</span>
+        </div>
+      </div>`;
+  } else {
+    mapDiv.innerHTML = `<div class="empty-data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      <p>No location data available</p>
+      <div class="sub">Map will appear once GPS events are received</div>
+    </div>`;
+  }
+}
+
+// ── Init ──
+fetchDashboard();
+setInterval(fetchDashboard, 10000);
+</script>
+</body>
+</html>

