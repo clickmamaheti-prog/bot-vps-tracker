@@ -330,13 +330,17 @@ def map_view(tid):
     evs = db_exec("SELECT latitude,longitude,accuracy,timestamp FROM tracking_events WHERE tracking_id=? ORDER BY timestamp DESC", (tid,))
     return render_template("map.html", tracking_id=tid, link_info=info[0], events=evs)
 
+def token_hash():
+    return hashlib.sha256(DASHBOARD_TOKEN.encode()).hexdigest()[:16]
+
 def is_authenticated():
     """Check if user is authenticated via session or URL token"""
-    if session.get("dashboard_authenticated"):
+    if session.get("dashboard_authenticated") and session.get("token_hash") == token_hash():
         return True
     token = request.args.get("token", "")
     if token == DASHBOARD_TOKEN:
         session["dashboard_authenticated"] = True
+        session["token_hash"] = token_hash()
         session.permanent = False
         return True
     return False
@@ -348,17 +352,19 @@ def login():
         password = data.get("password", "")
         if password == DASHBOARD_TOKEN:
             session["dashboard_authenticated"] = True
+            session["token_hash"] = token_hash()
             session.permanent = False
             return jsonify({"success": True, "redirect": "/dashboard"})
         return jsonify({"success": False, "message": "Password salah"}), 401
     # GET: show login page
-    if session.get("dashboard_authenticated"):
+    if session.get("dashboard_authenticated") and session.get("token_hash") == token_hash():
         return redirect(url_for("dashboard"))
+    session.clear()
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
-    session.pop("dashboard_authenticated", None)
+    session.clear()
     return redirect("/login")
 
 @app.route("/dashboard")
