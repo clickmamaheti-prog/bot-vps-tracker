@@ -113,6 +113,18 @@ body {
   letter-spacing: 0.3px;
 }
 .nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-logout {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  color: var(--text-tertiary);
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-logout:hover {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
 .nav-time {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px; color: var(--text-tertiary);
@@ -528,7 +540,7 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
   <!-- Nav -->
   <nav class="nav">
     <div class="nav-inner">
-      <a class="nav-brand" href="/dashboard?token={{ token }}">
+      <a class="nav-brand" href="/dashboard">
         <div class="nav-logo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
@@ -552,6 +564,13 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
           Live
         </div>
         <div class="nav-time" id="clock">--:--:--</div>
+        <a href="/logout" class="nav-logout" title="Logout">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </a>
       </div>
     </div>
   </nav>
