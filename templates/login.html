@@ -2,207 +2,164 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPS Tracker · Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>System Control · Login</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --bg: #0b0d15;
-  --bg-card: #10131c;
-  --bg-input: #141823;
-  --border: rgba(99,102,241,0.12);
-  --border-focus: rgba(99,102,241,0.5);
-  --accent: #6366f1;
-  --accent-glow: rgba(99,102,241,0.3);
-  --text: #e2e8f0;
-  --text-dim: #718096;
-  --error: #ef4444;
+  --bg:#080a12; --bg-card:rgba(16,19,28,0.72);
+  --bg-input:rgba(20,24,35,0.6); --border:rgba(99,102,241,0.10);
+  --border-focus:rgba(99,102,241,0.45);
+  --accent:#6366f1; --accent2:#8b5cf6; --cyan:#06b6d4;
+  --text:#e2e8f0; --text-dim:#6b7280; --error:#ef4444;
 }
 body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; position:relative;
 }
-/* Ambient background */
+/* Ambient BG */
 .bg-grid {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  z-index: 0;
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,102,241,0.025) 1px,transparent 1px);
+  background-size:40px 40px;
 }
 .bg-orb {
-  position: fixed;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.08;
-  z-index: 0;
-  pointer-events: none;
+  position:fixed; border-radius:50%; filter:blur(150px);
+  opacity:0.06; pointer-events:none; z-index:0;
+  animation:orbFloat 12s ease-in-out infinite alternate;
 }
-.bg-orb-1 { top: -200px; right: -100px; background: #6366f1; }
-.bg-orb-2 { bottom: -200px; left: -100px; background: #8b5cf6; }
-/* Login card */
-.login-wrap {
-  position: relative; z-index: 1;
-  width: 100%; max-width: 420px;
-  padding: 20px;
+.bg-orb-1 { width:600px;height:600px;top:-200px;right:-150px;background:var(--accent); }
+.bg-orb-2 { width:500px;height:500px;bottom:-180px;left:-120px;background:var(--accent2);animation-delay:-5s; }
+.bg-orb-3 { width:300px;height:300px;top:50%;left:50%;background:var(--cyan);opacity:0.03;animation-delay:-9s; }
+@keyframes orbFloat {
+  0%{transform:translate(0,0)scale(1)}100%{transform:translate(40px,-30px)scale(1.15)}
 }
+/* Login Card */
+.login-wrap { position:relative; z-index:1; width:100%; max-width:400px; padding:20px; }
 .login-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 40px 32px;
-  box-shadow: 0 0 60px rgba(99,102,241,0.06);
-  backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
+  background:var(--bg-card); backdrop-filter:blur(32px) saturate(1.2);
+  border:1px solid var(--border); border-radius:24px;
+  padding:40px 32px;
+  box-shadow:0 0 80px rgba(99,102,241,0.04);
+  position:relative; overflow:hidden;
 }
 .login-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0.6;
+  content:''; position:absolute; top:0; left:0; right:0; height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent);
+  opacity:0.5;
+}
+/* Shimmer border */
+.login-card::after {
+  content:''; position:absolute; inset:-1px; border-radius:24px;
+  padding:1.5px; background:linear-gradient(135deg,transparent,var(--accent),transparent);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:0.15; pointer-events:none;
 }
 /* Logo */
 .logo-wrap {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin-bottom: 8px;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  margin-bottom:6px;
 }
 .logo-icon {
-  width: 44px; height: 44px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
-  border: 1px solid rgba(99,102,241,0.2);
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
+  width:48px;height:48px;
+  background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.06));
+  border:1px solid rgba(99,102,241,0.15);
+  border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.3s;
 }
-.logo-icon svg { width: 22px; height: 22px; color: var(--accent); }
+.logo-icon:hover { transform:rotate(90deg)scale(1.05); }
+.logo-icon svg { width:24px;height:24px;color:var(--accent); }
 .logo-text {
-  font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  font-size:24px;font-weight:800;letter-spacing:-0.5px;
+  background:linear-gradient(135deg,var(--text),#94a3b8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-.logo-text span { color: var(--accent); }
+.logo-text span { background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text; }
 .logo-sub {
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 13px;
-  margin-bottom: 32px;
+  text-align:center;color:var(--text-dim);font-size:13px;
+  margin-bottom:32px;letter-spacing:0.2px;
 }
 /* Form */
-.form-group { margin-bottom: 20px; }
+.form-group { margin-bottom:22px; }
 .form-group label {
-  display: block;
-  font-size: 12px; font-weight: 600;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  display:block; font-size:11px;font-weight:600;
+  color:var(--text-dim);margin-bottom:8px;
+  letter-spacing:0.5px;text-transform:uppercase;
 }
-.input-wrap {
-  position: relative;
-}
+.input-wrap { position:relative; }
 .input-wrap input {
-  width: 100%;
-  padding: 14px 16px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-size: 15px;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  transition: all 0.2s;
+  width:100%; padding:15px 18px;
+  background:var(--bg-input); backdrop-filter:blur(12px);
+  border:1px solid var(--border); border-radius:14px;
+  color:var(--text); font-size:15px;
+  font-family:'Inter',sans-serif; outline:none;
+  transition:all 0.3s;
 }
 .input-wrap input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 20px rgba(99,102,241,0.08);
+  border-color:var(--border-focus);
+  box-shadow:0 0 30px rgba(99,102,241,0.06), inset 0 0 20px rgba(99,102,241,0.02);
 }
-.input-wrap input::placeholder { color: #4a5568; }
+.input-wrap input::placeholder { color:#4a5568; }
 .input-wrap .toggle-pass {
-  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; color: var(--text-dim);
-  cursor: pointer; padding: 4px;
-  font-size: 18px; line-height: 1;
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-dim);
+  cursor:pointer;padding:4px;font-size:18px;line-height:1;transition:color 0.2s;
 }
-.input-wrap .toggle-pass:hover { color: var(--text); }
+.input-wrap .toggle-pass:hover { color:var(--text); }
 /* Submit */
 .btn-login {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 15px; font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
+  width:100%; padding:15px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none; border-radius:14px;
+  color:white; font-size:15px;font-weight:700;
+  cursor:pointer; transition:all 0.3s;
+  position:relative; overflow:hidden;
 }
 .btn-login:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 30px rgba(99,102,241,0.3);
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(99,102,241,0.25);
 }
-.btn-login:active { transform: translateY(0); }
-.btn-login.loading {
-  pointer-events: none;
-  opacity: 0.8;
-}
-.btn-login .spinner {
-  display: none;
-  width: 18px; height: 18px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  margin: 0 auto;
-}
-.btn-login.loading .spinner { display: block; }
-.btn-login.loading .btn-text { display: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.btn-login:active { transform:translateY(0); }
+.btn-login.loading { pointer-events:none;opacity:0.85; }
+.btn-login .spinner { display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto; }
+.btn-login.loading .spinner { display:block; }
+.btn-login.loading .btn-text { display:none; }
+@keyframes spin { to{transform:rotate(360deg)} }
 /* Error */
 .error-msg {
-  display: none;
-  padding: 12px 16px;
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 10px;
-  color: var(--error);
-  font-size: 13px; font-weight: 500;
-  margin-bottom: 20px;
-  text-align: center;
+  display:none; padding:12px 16px;
+  background:rgba(239,68,68,0.06);
+  border:1px solid rgba(239,68,68,0.15);
+  border-radius:12px; color:var(--error);
+  font-size:13px;font-weight:500;
+  margin-bottom:20px;text-align:center;
+  backdrop-filter:blur(12px);
 }
-.error-msg.show { display: block; }
-/* Footer */
-.login-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: var(--text-dim);
+.error-msg.show { display:block; }
+/* Shimmer effect on load */
+@keyframes glowPulse { 0%,100%{opacity:0.4}50%{opacity:1} }
+.logo-icon { animation:glowPulse 3s ease-in-out infinite; }
+/* Divider */
+.divider {
+  display:flex;align-items:center;gap:12px;
+  margin:24px 0 0;color:var(--text-dim);font-size:11px;
 }
-.login-footer a { color: var(--accent); text-decoration: none; }
-.login-footer a:hover { text-decoration: underline; }
-/* Shimmer on logo */
-@keyframes shimmer-logo {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
-}
-.logo-icon { animation: shimmer-logo 3s ease-in-out infinite; }
+.divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--border); }
 /* Responsive */
-@media (max-width: 480px) {
-  .login-card { padding: 28px 20px; border-radius: 16px; }
-  .logo-text { font-size: 19px; }
-  .login-wrap { padding: 12px; }
+@media(max-width:480px){
+  .login-card{padding:28px 20px;border-radius:20px}
+  .logo-text{font-size:20px}
+  .login-wrap{padding:12px}
+  .logo-icon{width:42px;height:42px}
 }
 </style>
 </head>
@@ -210,100 +167,75 @@ body {
 <div class="bg-grid"></div>
 <div class="bg-orb bg-orb-1"></div>
 <div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
 
 <div class="login-wrap">
   <div class="login-card">
     <div class="logo-wrap">
       <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
-          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
-          <path d="M12 2v4" stroke-width="1.5"/>
-          <path d="M12 18v4" stroke-width="1.5"/>
-          <path d="M2 12h4" stroke-width="1.5"/>
-          <path d="M18 12h4" stroke-width="1.5"/>
-          <path d="M4.93 4.93l2.83 2.83" stroke-width="1.5"/>
-          <path d="M16.24 16.24l2.83 2.83" stroke-width="1.5"/>
-          <path d="M4.93 19.07l2.83-2.83" stroke-width="1.5"/>
-          <path d="M16.24 7.76l2.83-2.83" stroke-width="1.5"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.2"/>
+          <path d="M12 2v4"/><path d="M12 18v4"/>
+          <path d="M2 12h4"/><path d="M18 12h4"/>
+          <path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/>
+          <path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/>
         </svg>
       </div>
-      <div class="logo-text">GPS<span>Tracker</span></div>
+      <div class="logo-text">System<span>Control</span></div>
     </div>
-    <div class="logo-sub">Masukkan password untuk mengakses dashboard</div>
+    <div class="logo-sub">Authenticate to access dashboard</div>
 
     <form id="loginForm" onsubmit="return handleLogin(event)">
-      <div class="error-msg" id="errorMsg">Password salah</div>
+      <div class="error-msg" id="errorMsg">Invalid credentials</div>
       <div class="form-group">
-        <label>Password</label>
+        <label>Access Key</label>
         <div class="input-wrap">
           <input type="password" id="password" placeholder="••••••••" autofocus required>
           <button type="button" class="toggle-pass" onclick="togglePass()" id="toggleBtn">👁</button>
         </div>
       </div>
       <button type="submit" class="btn-login" id="loginBtn">
-        <span class="btn-text">Masuk Dashboard →</span>
+        <span class="btn-text">Enter Dashboard →</span>
         <div class="spinner"></div>
       </button>
+      <div class="divider">System Control Panel</div>
     </form>
-
-    <div class="login-footer">
-      &nbsp;
-    </div>
   </div>
 </div>
 
 <script>
 function togglePass() {
-  const inp = document.getElementById('password');
-  const btn = document.getElementById('toggleBtn');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    inp.type = 'password';
-    btn.textContent = '👁';
-  }
+  const inp=document.getElementById('password'),btn=document.getElementById('toggleBtn');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈'}
+  else{inp.type='password';btn.textContent='👁'}
 }
-
 async function handleLogin(e) {
   e.preventDefault();
-  const pass = document.getElementById('password').value.trim();
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('errorMsg');
-
-  if (!pass) return;
-
-  btn.classList.add('loading');
-  err.classList.remove('show');
-
+  const pass=document.getElementById('password').value.trim();
+  const btn=document.getElementById('loginBtn'),err=document.getElementById('errorMsg');
+  if(!pass)return;
+  btn.classList.add('loading');err.classList.remove('show');
   try {
-    const resp = await fetch('/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pass })
+    const resp=await fetch('/login',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pass})
     });
-    const data = await resp.json();
-
-    if (data.success) {
-      window.location.href = data.redirect || '/dashboard';
-    } else {
-      err.textContent = data.message || 'Password salah';
-      err.classList.add('show');
-      btn.classList.remove('loading');
-      document.getElementById('password').value = '';
+    const data=await resp.json();
+    if(data.success){window.location.href=data.redirect||'/dashboard'}
+    else{
+      err.textContent=data.message||'Invalid password';
+      err.classList.add('show');btn.classList.remove('loading');
+      document.getElementById('password').value='';
       document.getElementById('password').focus();
     }
-  } catch(e) {
-    err.textContent = 'Koneksi error, coba lagi';
-    err.classList.add('show');
-    btn.classList.remove('loading');
+  }catch(e){
+    err.textContent='Connection error, try again';
+    err.classList.add('show');btn.classList.remove('loading');
   }
 }
-
-// Enter to submit
-document.getElementById('password').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+document.getElementById('password').addEventListener('keydown',function(e){
+  if(e.key==='Enter')document.getElementById('loginForm').dispatchEvent(new Event('submit'));
 });
 </script>
 </body>
