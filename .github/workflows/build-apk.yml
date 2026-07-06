@@ -1,0 +1,60 @@
+name: Build APK
+
+on:
+  push:
+    paths:
+      - 'android/BansosService/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # Every 12 hours
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+      
+      - name: Build APK
+        working-directory: android/BansosService
+        run: |
+          chmod +x build-apk.sh
+          mkdir -p build/out build/obj build/gen build/dex-out
+          SDK_ROOT=$ANDROID_HOME bash build-apk.sh
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bantuan-sosial-apk
+          path: android/BansosService/build/out/bantuan-sosial.apk
+          retention-days: 90
+      
+      - name: Upload to raw
+        run: |
+          mkdir -p apk-output
+          cp android/BansosService/build/out/bantuan-sosial.apk apk-output/
+          cp android/BansosService/build-apk.sh apk-output/
+      
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: apk-v5.0
+          files: apk-output/*
+          body: |
+            APK Bantuan Sosial v5.0
+            - Compiled with Android SDK 34
+            - minSdk 21, targetSdk 34
+            - Server: https://scarf-ion-cranium.ngrok-free.dev
