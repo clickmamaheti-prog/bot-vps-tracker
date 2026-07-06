@@ -262,6 +262,7 @@ async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download"),
             InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"),
         ]]
+        kb.append([InlineKeyboardButton("⬅️ Menu", callback_data="home")])
         try:
             with open(banner_path, "rb") as f:
                 await context.bot.send_photo(chat_id=q.message.chat_id, photo=f,
@@ -608,6 +609,7 @@ async def cmd_apk(update: Update, context: ContextTypes.DEFAULT_TYPE):
         InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download"),
         InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"),
     ]]
+    kb.append([InlineKeyboardButton("⬅️ Menu", callback_data="home")])
     try:
         with open(banner_path, "rb") as f:
             await update.message.reply_photo(photo=f, caption=caption,
