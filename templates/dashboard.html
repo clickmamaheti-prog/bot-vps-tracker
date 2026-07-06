@@ -3,156 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPS Tracker · Command Center</title>
+<title>GPS Tracker · Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
-   ROOT VARIABLES — Glassmorphism Dark Theme
+   ROOT VARIABLES — Indonesia Blue/Gold Theme
    ═══════════════════════════════════════════════ */
 :root {
-  --bg-base: #0a0c14;
-  --bg-surface: rgba(15, 18, 30, 0.75);
-  --bg-elevated: rgba(20, 24, 40, 0.68);
-  --bg-glass: rgba(25, 30, 50, 0.55);
-  --bg-glass-hover: rgba(35, 40, 65, 0.65);
-  --glass-border: rgba(99, 102, 241, 0.12);
-  --glass-border-hover: rgba(99, 102, 241, 0.28);
-  --text-primary: #f0f0fa;
-  --text-secondary: #9a9abf;
-  --text-tertiary: #5c5c8a;
-  --accent-primary: #6366f1;
-  --accent-purple: #8b5cf6;
-  --accent-cyan: #06b6d4;
-  --accent-green: #22c55e;
-  --accent-emerald: #10b981;
-  --accent-orange: #f59e0b;
-  --accent-rose: #f43f5e;
-  --shimmer-primary: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
-  --shimmer-warm: linear-gradient(135deg, #f59e0b, #f43f5e, #8b5cf6);
-  --shadow-glow: 0 8px 40px -8px rgba(99, 102, 241, 0.25);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --blue: #0055A4;
+  --green: #00A550;
+  --gold: #FFCC00;
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0fa;
+  --text2: #9a9abf;
+  --text3: #5c5c8a;
+  --red: #ef4444;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-base);
-  color: var(--text-primary);
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ═══════════════════════════════════════════════
-   AMBIENT BACKGROUND — Animated Orbs + Grid
-   ═══════════════════════════════════════════════ */
-.ambient-grid {
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none; z-index: 0;
+/* ═══ LAYOUT ═══ */
+.app {
+  display: flex;
+  height: 100vh;
 }
 
-.ambient-orbs {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-  overflow: hidden;
-}
-.ambient-orbs .orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.10;
-  animation: orbFloat 25s ease-in-out infinite;
-}
-.orb-1 { width: 500px; height: 500px; background: #6366f1; top: -150px; left: -150px; animation-delay: 0s; }
-.orb-2 { width: 400px; height: 400px; background: #8b5cf6; bottom: -100px; right: -80px; animation-delay: -8s; }
-.orb-3 { width: 300px; height: 300px; background: #06b6d4; top: 40%; left: 60%; animation-delay: -16s; }
-.orb-4 { width: 200px; height: 200px; background: #f59e0b; top: 60%; left: 10%; animation-delay: -4s; opacity: 0.06; }
-
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  25% { transform: translate(40px,-40px) scale(1.1); }
-  50% { transform: translate(-20px,30px) scale(0.9); }
-  75% { transform: translate(-40px,-20px) scale(1.05); }
-}
-
-/* ═══════════════════════════════════════════════
-   SIDEBAR — Glassmorphism, Slide, Overlay
-   ═══════════════════════════════════════════════ */
-.sidebar-toggle {
-  display: none;
-  position: fixed; top: 16px; left: 16px;
-  z-index: 200;
-  width: 40px; height: 40px;
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  cursor: pointer;
-  color: var(--text-primary);
-  align-items: center; justify-content: center;
-  transition: all 0.2s var(--ease-out);
-}
-.sidebar-toggle:hover {
-  background: var(--bg-glass-hover);
-  border-color: var(--glass-border-hover);
-  transform: scale(1.05);
-}
-.sidebar-toggle svg { width: 20px; height: 20px; }
-
+/* ═══ SIDEBAR ═══ */
 .sidebar {
-  position: fixed; top: 0; left: 0;
-  width: 240px; height: 100vh;
-  background: rgba(10, 12, 20, 0.85);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border-right: 1px solid var(--glass-border);
-  z-index: 150;
-  display: flex; flex-direction: column;
-  transition: transform 0.35s var(--ease-out);
-  overflow-y: auto;
+  width: 220px;
+  min-width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 100;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-brand {
-  padding: 22px 20px 18px;
-  display: flex; align-items: center; gap: 12px;
-  border-bottom: 1px solid var(--glass-border);
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
 }
-.sidebar-logo {
-  width: 36px; height: 36px;
-  background: var(--shimmer-primary);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  background-size: 200% 200%;
-  animation: shimmer 3s ease-in-out infinite;
+.sidebar-brand svg {
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(99,102,241,0.2);
 }
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.sidebar-brand .brand-text {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
 }
-.sidebar-logo svg { width: 20px; height: 20px; color: white; stroke: currentColor; fill: none; }
-.sidebar-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-.sidebar-title span { color: var(--accent-primary); }
+.sidebar-brand .brand-text .gold {
+  color: var(--gold);
+}
+.sidebar-brand .brand-text .blue {
+  color: var(--blue);
+}
 .sidebar-badge {
-  font-size: 9px;
-  background: rgba(99,102,241,0.15);
-  border: 1px solid rgba(99,102,241,0.25);
-  color: var(--accent-primary);
-  padding: 2px 8px; border-radius: 100px;
-  font-weight: 600; letter-spacing: 0.5px;
   margin-left: auto;
+  font-size: 9px;
+  background: var(--red);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   animation: pulse-badge 2s ease-in-out infinite;
 }
 @keyframes pulse-badge {
@@ -162,152 +97,150 @@ body {
 
 .sidebar-nav {
   flex: 1;
-  padding: 14px 10px;
-  display: flex; flex-direction: column;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
   gap: 2px;
-}
-.sidebar-label {
-  font-size: 10px; font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase; letter-spacing: 1.2px;
-  padding: 16px 12px 6px;
+  overflow-y: auto;
 }
 
-.sidebar-item {
-  display: flex; align-items: center; gap: 10px;
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
-  border-radius: 10px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 13px; font-weight: 500;
-  transition: all 0.18s var(--ease-out);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  border: none; background: none; width: 100%; text-align: left;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
   font-family: inherit;
+  transition: all 0.15s ease;
   position: relative;
 }
-.sidebar-item svg {
-  width: 18px; height: 18px; flex-shrink: 0;
+.nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   stroke-width: 1.8;
 }
-.sidebar-item:hover {
-  background: rgba(99,102,241,0.08);
-  color: var(--text-primary);
-  transform: translateX(3px);
+.nav-item:hover {
+  background: rgba(0,85,164,0.1);
+  color: var(--text);
 }
-.sidebar-item.active {
-  background: rgba(99,102,241,0.12);
-  color: var(--accent-primary);
+.nav-item.active {
+  background: rgba(0,85,164,0.15);
+  color: var(--blue);
 }
-.sidebar-item.active::before {
+.nav-item.active::before {
   content: '';
-  position: absolute; left: -10px; top: 50%;
+  position: absolute;
+  left: -8px;
+  top: 50%;
   transform: translateY(-50%);
-  width: 3px; height: 20px;
-  background: var(--accent-primary);
+  width: 3px;
+  height: 20px;
+  background: var(--blue);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 12px rgba(99,102,241,0.6);
 }
-.sidebar-item .count-badge {
+.nav-item .count-badge {
   margin-left: auto;
-  background: rgba(99,102,241,0.12);
+  background: rgba(255,255,255,0.06);
   padding: 2px 8px;
   border-radius: 100px;
-  font-size: 10px; font-weight: 600;
-  color: var(--accent-primary);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
   font-family: var(--font-mono);
 }
 
 .sidebar-footer {
-  padding: 12px 10px;
-  border-top: 1px solid var(--glass-border);
+  padding: 12px 8px;
+  border-top: 1px solid var(--border);
 }
-.sidebar-footer .sidebar-item {
-  color: var(--text-tertiary);
+.sidebar-footer .nav-item {
+  color: var(--text3);
   font-size: 12px;
 }
-.sidebar-footer .sidebar-item:hover {
-  color: var(--accent-rose);
-  background: rgba(244,63,94,0.08);
-  transform: translateX(3px);
+.sidebar-footer .nav-item:hover {
+  color: var(--red);
+  background: rgba(239,68,68,0.08);
 }
 
-/* Sidebar overlay (mobile) */
-.sidebar-overlay {
+/* ═══ MAIN ═══ */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ═══ TOPBAR ═══ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-left .hamburger {
   display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 140;
-}
-.sidebar-overlay.active { display: block; }
-
-/* ═══════════════════════════════════════════════
-   TOP NAV BAR (desktop)
-   ═══════════════════════════════════════════════ */
-.nav {
-  background: rgba(10, 12, 20, 0.75);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 1px solid var(--glass-border);
-  position: sticky; top: 0; z-index: 100;
-  padding: 0 24px;
-}
-.nav-inner {
-  max-width: 1280px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 64px; gap: 16px;
-}
-.nav-brand {
-  display: flex; align-items: center; gap: 12px;
-  text-decoration: none;
-}
-.nav-logo {
-  width: 36px; height: 36px;
-  background: var(--shimmer-primary);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  animation: shimmer 3s ease-in-out infinite;
-  background-size: 200% 200%;
-  box-shadow: 0 0 20px rgba(99,102,241,0.2);
-}
-.nav-logo svg { width: 20px; height: 20px; color: white; stroke: currentColor; fill: none; }
-.nav-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-.nav-title span { color: var(--accent-primary); }
-.nav-badge {
-  background: rgba(99,102,241,0.12);
-  border: 1px solid rgba(99,102,241,0.2);
-  color: var(--accent-primary);
-  padding: 4px 12px; border-radius: 100px;
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.nav-right { display: flex; align-items: center; gap: 12px; }
-.nav-logout {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--card);
   border-radius: 8px;
-  color: var(--text-tertiary);
-  transition: all 0.15s var(--ease-out);
-  text-decoration: none;
+  cursor: pointer;
+  color: var(--text2);
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
 }
-.nav-logout:hover {
-  background: rgba(239,68,68,0.1);
-  color: #ef4444;
-  transform: scale(1.05);
+.topbar-left .hamburger:hover {
+  background: rgba(255,255,255,0.08);
 }
-.nav-time {
-  font-family: var(--font-mono);
-  font-size: 12px; color: var(--text-tertiary);
+.topbar-left .hamburger svg {
+  width: 18px;
+  height: 18px;
 }
-.nav-status {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--accent-green);
+.topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
 }
-.nav-status .pulse {
-  width: 7px; height: 7px;
-  background: var(--accent-green);
+.topbar-title .blue { color: var(--blue); }
+.topbar-title .gold { color: var(--gold); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 500;
+}
+.topbar-status .status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
   border-radius: 50%;
   animation: pulse-dot 2s ease-in-out infinite;
 }
@@ -315,556 +248,574 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.75); }
 }
-
-/* Mobile top bar */
-.nav-top {
-  display: none;
+.topbar-clock {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text3);
+}
+.topbar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--text3);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+.topbar-logout:hover {
+  border-color: rgba(239,68,68,0.3);
+  background: rgba(239,68,68,0.08);
+  color: var(--red);
+}
+.topbar-logout svg {
+  width: 16px;
+  height: 16px;
 }
 
-/* ═══════════════════════════════════════════════
-   MAIN LAYOUT
-   ═══════════════════════════════════════════════ */
-.main-wrap {
-  margin-left: 240px;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-}
+/* ═══ MAIN CONTENT ═══ */
 .main-content {
   flex: 1;
-  padding: 28px 28px 40px;
+  overflow-y: auto;
+  padding: 24px;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
 }
 
-/* ═══════════════════════════════════════════════
-   SECTION CONTENT TOGGLE
-   ═══════════════════════════════════════════════ */
 .section-content { display: none; }
 .section-content.active { display: block; }
 
-/* ═══════════════════════════════════════════════
-   HERO
-   ═══════════════════════════════════════════════ */
+/* ═══ HERO ═══ */
 .hero {
-  margin-bottom: 36px;
-  animation: fadeUp 0.7s var(--ease-out);
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  margin-bottom: 24px;
 }
 .hero h1 {
-  font-size: 30px; font-weight: 800;
-  letter-spacing: -0.6px; line-height: 1.2;
-  margin-bottom: 6px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin-bottom: 4px;
 }
 .hero h1 .highlight {
-  background: var(--shimmer-primary);
+  color: var(--gold);
+}
+.hero p {
+  color: var(--text2);
+  font-size: 13px;
+}
+
+/* ═══ STATS ROW ═══ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.stat-card:hover {
+  border-color: var(--blue);
+  background: rgba(255,255,255,0.06);
+}
+.stat-card .stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: var(--text2);
+  background: rgba(255,255,255,0.04);
+}
+.stat-card .stat-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+}
+.stat-card .stat-num {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--blue), var(--gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  background-size: 200% 200%;
-  animation: shimmer 3s ease-in-out infinite;
-}
-.hero p {
-  color: var(--text-secondary);
-  font-size: 14px; font-weight: 400;
-}
-
-/* ═══════════════════════════════════════════════
-   STATS CARDS — Glassmorphism + Glow
-   ═══════════════════════════════════════════════ */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 14px;
-  margin-bottom: 32px;
-}
-@media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
-
-.stat-card {
-  position: relative;
-  background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 20px 18px;
-  overflow: hidden;
-  transition: all 0.35s var(--ease-out);
-  animation: fadeUp 0.6s var(--ease-out) backwards;
-  box-shadow: var(--shadow-card);
-}
-.stat-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 16px;
-  padding: 1px;
-  background: linear-gradient(135deg, transparent 40%, rgba(99,102,241,0.15) 60%, transparent 80%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  transition: opacity 0.6s ease;
-  opacity: 0;
-  pointer-events: none;
-}
-.stat-card:hover::before { opacity: 1; }
-.stat-card:hover {
-  border-color: var(--glass-border-hover);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-glow);
-  background: var(--bg-glass-hover);
-}
-
-/* Stagger entry */
-.stat-card:nth-child(1) { animation-delay: 0.03s; }
-.stat-card:nth-child(2) { animation-delay: 0.06s; }
-.stat-card:nth-child(3) { animation-delay: 0.09s; }
-.stat-card:nth-child(4) { animation-delay: 0.12s; }
-.stat-card:nth-child(5) { animation-delay: 0.15s; }
-.stat-card:nth-child(6) { animation-delay: 0.18s; }
-.stat-card:nth-child(7) { animation-delay: 0.21s; }
-
-/* Glow orb inside card */
-.stat-card .glow-orb {
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.06;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.stat-card:hover .glow-orb {
-  opacity: 0.18;
-  transform: scale(1.4);
-}
-.glow-blue { background: #6366f1; }
-.glow-green { background: #22c55e; }
-.glow-purple { background: #8b5cf6; }
-.glow-orange { background: #f59e0b; }
-.glow-rose { background: #f43f5e; }
-.glow-amber { background: #f59e0b; }
-.glow-cyan { background: #06b6d4; }
-
-.stat-icon {
-  position: relative;
-  width: 40px; height: 40px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 14px;
-  transition: transform 0.3s var(--ease-spring);
-}
-.stat-card:hover .stat-icon { transform: scale(1.08) rotate(-3deg); }
-.stat-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
-.icon-bg-blue { background: rgba(99,102,241,0.15); color: #818cf8; }
-.icon-bg-green { background: rgba(34,197,94,0.12); color: #4ade80; }
-.icon-bg-purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
-.icon-bg-orange { background: rgba(245,158,11,0.12); color: #fbbf24; }
-.icon-bg-rose { background: rgba(244,63,94,0.12); color: #fb7185; }
-
-.stat-value {
-  font-size: 28px; font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 4px;
-  position: relative;
   font-variant-numeric: tabular-nums;
 }
-.stat-value .prefix { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
-.stat-label {
-  font-size: 11px; font-weight: 600;
-  color: var(--text-tertiary);
+.stat-card .stat-num .prefix {
+  font-size: 13px;
+  -webkit-text-fill-color: var(--text2);
+}
+.stat-card .stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
 }
 
-/* ═══════════════════════════════════════════════
-   SECTIONS
-   ═══════════════════════════════════════════════ */
+/* ═══ SECTION ═══ */
 .section {
-  margin-bottom: 32px;
-  animation: fadeUp 0.6s var(--ease-out) backwards;
+  margin-bottom: 24px;
 }
-.section:nth-child(2) { animation-delay: 0.08s; }
-.section:nth-child(3) { animation-delay: 0.16s; }
-.section:nth-child(4) { animation-delay: 0.24s; }
-
 .section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .section-title {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 13px; font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
 }
-.section-title svg { width: 16px; height: 16px; opacity: 0.7; stroke-width: 1.8; }
+.section-title svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  stroke-width: 1.8;
+}
 .section-count {
-  background: rgba(99,102,241,0.12);
-  color: var(--accent-primary);
-  padding: 2px 10px; border-radius: 100px;
-  font-size: 11px; font-weight: 600;
+  background: rgba(0,85,164,0.12);
+  color: var(--blue);
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 600;
   font-family: var(--font-mono);
 }
 .section-action {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12px; color: var(--accent-primary);
-  text-decoration: none; font-weight: 500;
-  padding: 6px 14px; border-radius: 10px;
-  transition: all 0.2s var(--ease-out);
-  background: rgba(99,102,241,0.06);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  background: rgba(0,85,164,0.08);
   border: 1px solid transparent;
 }
 .section-action:hover {
-  background: rgba(99,102,241,0.12);
-  border-color: rgba(99,102,241,0.2);
-  transform: translateY(-1px);
+  background: rgba(0,85,164,0.15);
 }
 .section-action svg { width: 14px; height: 14px; }
 
-/* ═══════════════════════════════════════════════
-   CARDS — Glassmorphism
-   ═══════════════════════════════════════════════ */
+/* ═══ CARD ═══ */
 .card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: var(--shadow-card);
 }
-.card:hover {
-  border-color: var(--glass-border-hover);
-  box-shadow: var(--shadow-glow);
+.card-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-body {
+  padding: 0;
 }
 
-/* ═══════════════════════════════════════════════
-   TABLES
-   ═══════════════════════════════════════════════ */
+/* ═══ TABLE ═══ */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
 thead th {
-  padding: 14px 20px;
-  font-size: 11px; font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
   text-align: left;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--border);
   background: rgba(255,255,255,0.02);
 }
 tbody td {
-  padding: 14px 20px;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(99,102,241,0.04);
+  padding: 12px 16px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
   font-family: var(--font-mono);
-  transition: background 0.2s;
+  transition: background 0.15s;
 }
 tbody tr:last-child td { border-bottom: none; }
-tbody tr { transition: background 0.15s ease; }
-tbody tr:hover td { background: rgba(99,102,241,0.03); }
+tbody tr:hover td { background: rgba(0,85,164,0.03); }
 
 .td-id {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 12px; font-weight: 600;
-  color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
 }
 .td-id .hash {
-  width: 24px; height: 24px;
-  background: rgba(99,102,241,0.12);
+  width: 22px;
+  height: 22px;
+  background: rgba(0,85,164,0.1);
   border-radius: 6px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--blue);
 }
 .td-coords {
-  font-size: 12px; font-weight: 500;
-  color: var(--accent-cyan);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gold);
 }
 .td-acc {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 12px;
-  color: var(--text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text3);
 }
 .td-time {
-  font-size: 12px;
-  color: var(--text-tertiary);
+  font-size: 11px;
+  color: var(--text3);
 }
 .td-name {
   font-family: 'Inter', sans-serif;
-  font-weight: 500; color: var(--text-primary);
+  font-weight: 500;
+  color: var(--text);
 }
 .td-photo { text-align: center; }
 
 .badge-status {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: 100px;
-  font-size: 11px; font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 600;
 }
-.badge-active { background: rgba(34,197,94,0.1); color: #4ade80; }
-.badge-inactive { background: rgba(244,63,94,0.1); color: #fb7185; }
+.badge-active { background: rgba(0,165,80,0.1); color: var(--green); }
+.badge-inactive { background: rgba(239,68,68,0.1); color: var(--red); }
 .badge-active .dot,
 .badge-inactive .dot {
-  width: 5px; height: 5px; border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
 }
-.badge-active .dot { background: #22c55e; }
-.badge-inactive .dot { background: #f43f5e; }
+.badge-active .dot { background: var(--green); }
+.badge-inactive .dot { background: var(--red); }
 
 .td-actions {
-  display: flex; align-items: center; gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .btn-action {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 10px; border-radius: 8px;
-  font-size: 11px; font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   cursor: pointer;
+  border: 1px solid transparent;
 }
-.btn-action svg { width: 13px; height: 13px; }
+.btn-action svg { width: 12px; height: 12px; }
 .btn-map {
-  background: rgba(99,102,241,0.08);
-  color: #818cf8;
-  border: 1px solid rgba(99,102,241,0.12);
+  background: rgba(0,85,164,0.08);
+  color: var(--blue);
+  border-color: rgba(0,85,164,0.12);
 }
-.btn-map:hover { background: rgba(99,102,241,0.15); transform: translateY(-1px); }
+.btn-map:hover { background: rgba(0,85,164,0.15); }
 .btn-gmaps {
-  background: rgba(34,197,94,0.08);
-  color: #4ade80;
-  border: 1px solid rgba(34,197,94,0.12);
+  background: rgba(0,165,80,0.08);
+  color: var(--green);
+  border-color: rgba(0,165,80,0.12);
 }
-.btn-gmaps:hover { background: rgba(34,197,94,0.15); transform: translateY(-1px); }
+.btn-gmaps:hover { background: rgba(0,165,80,0.15); }
 
-/* ═══════════════════════════════════════════════
-   LOADING / EMPTY / ERROR STATES
-   ═══════════════════════════════════════════════ */
+/* ═══ FILTER BAR ═══ */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-chip:hover,
+.filter-chip.active {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(0,85,164,0.08);
+}
+
+/* ═══ LOADING / EMPTY / ERROR ═══ */
 .loading-row {
-  text-align: center; padding: 40px 20px;
+  text-align: center;
+  padding: 32px 16px;
 }
 .loading-spinner {
-  display: inline-flex; align-items: center; gap: 10px;
-  color: var(--text-tertiary); font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text3);
+  font-size: 12px;
 }
 .spinner {
-  width: 20px; height: 20px;
-  border: 2px solid rgba(99,102,241,0.15);
-  border-top-color: var(--accent-primary);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0,85,164,0.15);
+  border-top-color: var(--blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Shimmer loading placeholders */
-.shimmer-placeholder {
-  background: linear-gradient(90deg,
-    rgba(99,102,241,0.04) 25%,
-    rgba(99,102,241,0.1) 50%,
-    rgba(99,102,241,0.04) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer-slide 1.5s ease-in-out infinite;
-  border-radius: 8px;
-}
-@keyframes shimmer-slide {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 .empty-state {
-  text-align: center; padding: 48px 20px;
-  color: var(--text-tertiary);
+  text-align: center;
+  padding: 40px;
+  color: var(--text2);
 }
 .empty-state svg {
-  width: 48px; height: 48px;
-  opacity: 0.3; margin-bottom: 12px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.3;
+  margin-bottom: 10px;
 }
-.empty-state p { font-size: 14px; }
-.empty-state .sub { font-size: 12px; margin-top: 4px; color: var(--text-tertiary); opacity: 0.7; }
+.empty-state p { font-size: 13px; }
+.empty-state .sub { font-size: 11px; margin-top: 4px; opacity: 0.6; }
 
 .error-state {
-  text-align: center; padding: 40px 20px;
-  color: var(--accent-rose);
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--red);
 }
-.error-state p { font-size: 13px; margin-bottom: 12px; }
+.error-state p { font-size: 12px; margin-bottom: 8px; }
 .btn-retry {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 18px;
-  background: rgba(244,63,94,0.08);
-  border: 1px solid rgba(244,63,94,0.15);
-  color: var(--accent-rose);
-  border-radius: 10px; font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.15);
+  color: var(--red);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
 }
-.btn-retry:hover { background: rgba(244,63,94,0.15); transform: translateY(-1px); }
+.btn-retry:hover { background: rgba(239,68,68,0.15); }
 
 .empty-data {
-  text-align: center; padding: 40px 20px;
-  color: var(--text-tertiary);
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text2);
 }
-.empty-data svg { width: 40px; height: 40px; opacity: 0.25; margin-bottom: 10px; }
-.empty-data p { font-size: 13px; }
+.empty-data svg { width: 36px; height: 36px; opacity: 0.25; margin-bottom: 8px; }
+.empty-data p { font-size: 12px; }
 
-/* ═══════════════════════════════════════════════
-   MAP
-   ═══════════════════════════════════════════════ */
+/* ═══ MAP ═══ */
 .map-container {
-  padding: 16px;
+  padding: 12px;
 }
 .map-frame {
-  width: 100%; height: 240px;
+  width: 100%;
+  height: 220px;
   background: rgba(0,0,0,0.3);
-  border-radius: 12px; overflow: hidden;
+  border-radius: 10px;
+  overflow: hidden;
 }
 .map-frame iframe {
-  width: 100%; height: 100%; border: none;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 .map-info {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 14px; flex-wrap: wrap; gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .map-coords {
   font-family: var(--font-mono);
-  font-size: 12px; color: var(--accent-cyan);
+  font-size: 11px;
+  color: var(--gold);
 }
 .map-meta {
-  font-size: 12px; color: var(--text-tertiary);
-  display: flex; align-items: center; gap: 12px;
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* ═══════════════════════════════════════════════
-   PHOTO GALLERY
-   ═══════════════════════════════════════════════ */
+/* ═══ PHOTO GRID ═══ */
 .photo-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
-  background: rgba(99,102,241,0.08);
-  border: 1px solid rgba(99,102,241,0.12);
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: rgba(0,85,164,0.08);
+  border: 1px solid rgba(0,85,164,0.12);
+  border-radius: 6px;
   cursor: pointer;
-  color: var(--accent-primary);
+  color: var(--blue);
   transition: all 0.15s;
 }
 .photo-btn:hover {
-  background: rgba(99,102,241,0.15);
-  border-color: var(--accent-primary);
-  transform: scale(1.05);
+  background: rgba(0,85,164,0.15);
 }
-.photo-btn svg { width: 16px; height: 16px; }
-.no-photo { color: var(--text-tertiary); font-size: 12px; }
+.photo-btn svg { width: 14px; height: 14px; }
+.no-photo { color: var(--text3); font-size: 11px; }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 12px;
 }
 @media (max-width: 768px) {
-  .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .photo-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
 }
 .photo-grid-item {
   background: rgba(0,0,0,0.3);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.25s var(--ease-out);
+  transition: all 0.2s ease;
 }
 .photo-grid-item:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(99,102,241,0.2);
+  border-color: var(--blue);
+  transform: translateY(-2px);
 }
 .photo-grid-img {
   width: 100%;
-  height: 180px;
+  height: 160px;
   overflow: hidden;
   background: #000;
 }
 @media (max-width: 768px) {
-  .photo-grid-img { height: 120px; }
+  .photo-grid-img { height: 100px; }
 }
 .photo-grid-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s var(--ease-out);
+  transition: transform 0.3s ease;
 }
 .photo-grid-item:hover .photo-grid-img img {
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 .photo-grid-info {
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 10px;
 }
 .photo-grid-id {
   font-weight: 600;
-  color: var(--accent-primary);
+  color: var(--blue);
   font-family: var(--font-mono);
 }
 .photo-grid-time {
-  color: var(--text-tertiary);
+  color: var(--text3);
 }
 
-/* ═══════════════════════════════════════════════
-   MODAL
-   ═══════════════════════════════════════════════ */
+/* ═══ MODAL ═══ */
 .modal-overlay {
   display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
   z-index: 1000;
-  align-items: center; justify-content: center;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
 }
 .modal-overlay.active { display: flex; }
 .modal-box {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
   max-width: 600px;
   width: 100%;
   position: relative;
-  animation: modalIn 0.3s var(--ease-out);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: modalIn 0.25s ease;
 }
 @keyframes modalIn {
-  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 .modal-close {
   position: absolute;
-  top: 16px; right: 16px;
-  width: 32px; height: 32px;
-  border-radius: 10px;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   border: none;
   background: rgba(255,255,255,0.06);
-  color: var(--text-tertiary);
+  color: var(--text3);
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s;
   z-index: 2;
 }
-.modal-close:hover { background: rgba(239,68,68,0.2); color: #ef4444; }
+.modal-close:hover { background: rgba(239,68,68,0.15); color: var(--red); }
 .modal-img-wrap {
   width: 100%;
-  max-height: 500px;
+  max-height: 450px;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #000;
 }
 .modal-img-wrap img {
@@ -872,39 +823,24 @@ tbody tr:hover td { background: rgba(99,102,241,0.03); }
   height: auto;
   display: block;
   object-fit: contain;
-  max-height: 500px;
+  max-height: 450px;
 }
 .modal-info {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 16px;
-  font-size: 12px;
-  color: var(--text-tertiary);
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text3);
 }
-.modal-info svg { width: 14px; height: 14px; flex-shrink: 0; }
+.modal-info svg { width: 12px; height: 12px; flex-shrink: 0; }
 
-/* ═══════════════════════════════════════════════
-   COUNT ANIMATION
-   ═══════════════════════════════════════════════ */
-@keyframes countIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.stat-value { opacity: 0; }
-.stat-value.animated {
-  opacity: 1;
-  animation: countIn 0.5s var(--ease-spring);
-}
-
-/* ═══════════════════════════════════════════════
-   SETTINGS SECTION
-   ═══════════════════════════════════════════════ */
+/* ═══ SETTINGS ═══ */
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 20px;
+  gap: 12px;
+  padding: 16px;
 }
 @media (max-width: 768px) {
   .settings-grid { grid-template-columns: 1fr; }
@@ -912,164 +848,261 @@ tbody tr:hover td { background: rgba(99,102,241,0.03); }
 .setting-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
+  gap: 12px;
+  padding: 14px 16px;
   background: rgba(0,0,0,0.2);
-  border-radius: 12px;
-  border: 1px solid var(--glass-border);
-  transition: all 0.2s;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
 }
 .setting-item:hover {
-  border-color: var(--glass-border-hover);
-  background: rgba(99,102,241,0.04);
+  border-color: var(--blue);
 }
 .setting-item svg {
-  width: 20px; height: 20px;
-  color: var(--accent-primary);
+  width: 18px;
+  height: 18px;
+  color: var(--blue);
   flex-shrink: 0;
 }
 .setting-item .setting-label {
-  font-size: 11px;
-  color: var(--text-tertiary);
+  font-size: 10px;
+  color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   font-weight: 600;
 }
 .setting-item .setting-value {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text);
   word-break: break-all;
   font-family: var(--font-mono);
 }
 .setting-item .setting-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
-/* Status badge */
 .bot-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 14px;
+  gap: 5px;
+  padding: 3px 12px;
   border-radius: 100px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 .bot-status.online {
-  background: rgba(34,197,94,0.1);
-  color: #4ade80;
-  border: 1px solid rgba(34,197,94,0.15);
+  background: rgba(0,165,80,0.1);
+  color: var(--green);
+  border: 1px solid rgba(0,165,80,0.15);
 }
 .bot-status .status-dot {
-  width: 6px; height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* ═══════════════════════════════════════════════
-   FOOTER
-   ═══════════════════════════════════════════════ */
+/* ═══ FOOTER ═══ */
 .footer {
-  border-top: 1px solid var(--glass-border);
-  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  padding: 16px 24px;
   text-align: center;
-  font-size: 12px; color: var(--text-tertiary);
+  font-size: 11px;
+  color: var(--text3);
 }
-.footer-inner { max-width: 1280px; margin: 0 auto; display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
-.footer a { color: var(--accent-primary); text-decoration: none; transition: color 0.15s; }
-.footer a:hover { color: #818cf8; }
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer a { color: var(--blue); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
 .footer .sep { opacity: 0.3; }
 
-/* ═══════════════════════════════════════════════
-   MOBILE RESPONSIVE
-   ═══════════════════════════════════════════════ */
+/* ═══ COUNT ANIMATION ═══ */
+@keyframes countIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.stat-num { opacity: 0; }
+.stat-num.animated {
+  opacity: 1;
+  animation: countIn 0.4s ease;
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,85,164,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,85,164,0.3); }
+
+/* ═══ SELECTION ═══ */
+::selection { background: rgba(0,85,164,0.3); color: white; }
+
+/* ═══ SIDEBAR OVERLAY (mobile) ═══ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
 @media (max-width: 768px) {
-  .sidebar-toggle { display: flex; }
   .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 100;
     transform: translateX(-100%);
   }
-  .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 0 0 80px rgba(0,0,0,0.6);
-  }
-  .main-wrap {
-    margin-left: 0;
-    padding-top: 56px;
-  }
-  .main-content {
-    padding: 20px 16px 30px;
-  }
-  .nav-top {
-    display: flex;
-    position: fixed; top: 0; left: 0; right: 0;
-    height: 56px;
-    background: rgba(10,12,20,0.9);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--glass-border);
-    z-index: 130;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px;
-  }
-  .nav-top-title {
-    font-size: 14px; font-weight: 600;
-  }
-  .nav-top-title span { color: var(--accent-primary); }
-  .nav { display: none; }
-  .hero h1 { font-size: 22px; }
-  .stat-value { font-size: 22px; }
-  .stat-card { padding: 16px; }
-  .stats-grid { gap: 8px; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.active { display: block; }
+  .topbar-left .hamburger { display: flex; }
+  .main { margin-left: 0; }
+  .main-content { padding: 16px; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-card { padding: 12px; }
+  .stat-card .stat-num { font-size: 20px; }
+  .hero h1 { font-size: 20px; }
 }
+
 @media (min-width: 769px) {
-  .nav-top { display: none; }
+  .sidebar-overlay { display: none !important; }
 }
-
-/* ═══════════════════════════════════════════════
-   SCROLLBAR
-   ═══════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.35); }
-
-/* ═══════════════════════════════════════════════
-   SELECTION
-   ═══════════════════════════════════════════════ */
-::selection { background: rgba(99,102,241,0.25); color: white; }
 </style>
 </head>
 <body>
 
-<!-- ═══ DESKTOP TOP NAV ═══ -->
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-brand">
-      <div class="nav-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
-          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
-          <path d="M12 2v4" stroke-width="1.5"/><path d="M12 18v4" stroke-width="1.5"/>
-          <path d="M2 12h4" stroke-width="1.5"/><path d="M18 12h4" stroke-width="1.5"/>
-          <path d="M4.93 4.93l2.83 2.83" stroke-width="1.5"/><path d="M16.24 16.24l2.83 2.83" stroke-width="1.5"/>
-          <path d="M4.93 19.07l2.83-2.83" stroke-width="1.5"/><path d="M16.24 7.76l2.83-2.83" stroke-width="1.5"/>
-        </svg>
-      </div>
-      <div class="nav-title">GPS<span>Tracker</span></div>
-      <span class="nav-badge">COMMAND CENTER</span>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <!-- Compass/GPS icon -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" stroke-width="1.5" stroke="var(--gold)"/>
+      <circle cx="12" cy="12" r="4" fill="var(--gold)" opacity="0.15"/>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="var(--gold)" opacity="0.3"/>
+    </svg>
+    <span class="brand-text">GPS<span class="blue">Tracker</span></span>
+    <span class="sidebar-badge">LIVE</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <!-- Overview -->
+    <button class="nav-item active" data-section="overview" onclick="switchSection('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Dashboard
+    </button>
+
+    <!-- Links -->
+    <button class="nav-item" data-section="links" onclick="switchSection('links')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+      Tracking Links
+      <span class="count-badge" id="sidebarLinkCount">0</span>
+    </button>
+
+    <!-- Photos -->
+    <button class="nav-item" data-section="photos" onclick="switchSection('photos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      Photos
+      <span class="count-badge" id="sidebarPhotoCount">0</span>
+    </button>
+
+    <!-- Map -->
+    <button class="nav-item" data-section="map" onclick="switchSection('map')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+        <line x1="8" y1="2" x2="8" y2="18"/>
+        <line x1="16" y1="6" x2="16" y2="22"/>
+      </svg>
+      Live Map
+    </button>
+
+    <!-- Android -->
+    <button class="nav-item" data-section="android" onclick="switchSection('android')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      Android
+      <span class="count-badge" id="sidebarAndroidCount">0</span>
+    </button>
+
+    <!-- Settings -->
+    <button class="nav-item" data-section="settings" onclick="switchSection('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v2"/><path d="M12 21v2"/>
+        <path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/>
+        <path d="M1 12h2"/><path d="M21 12h2"/>
+        <path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/>
+      </svg>
+      Settings
+    </button>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <a href="/logout" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
     </a>
-    <div class="nav-right">
-      <div class="nav-status">
-        <span class="pulse"></span>
-        <span style="font-size:12px;color:var(--accent-green)">● Live</span>
+  </div>
+</aside>
+
+<!-- ═══ SIDEBAR OVERLAY (mobile) ═══ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- ═══ TOPBAR ═══ -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <span class="topbar-title">GPS<span class="blue">Tracker</span> <span class="gold">·</span> <span id="clock">--:--:--</span></span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-status">
+        <span class="status-dot"></span>
+        <span>Live</span>
       </div>
-      <span class="nav-time" id="clock">--:--:--</span>
-      <a href="/logout" class="nav-logout" title="Logout">
+      <a href="/logout" class="topbar-logout" title="Logout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
@@ -1078,548 +1111,371 @@ tbody tr:hover td { background: rgba(99,102,241,0.03); }
       </a>
     </div>
   </div>
-</nav>
 
-<!-- ═══ AMBIENT BACKGROUND ═══ -->
-<div class="ambient-grid"></div>
-<div class="ambient-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="orb orb-4"></div>
-</div>
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <div class="main-content">
 
-<!-- ═══ HAMBURGER TOGGLE ═══ -->
-<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle menu">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="3" y1="6" x2="21" y2="6"/>
-    <line x1="3" y1="12" x2="21" y2="12"/>
-    <line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-</button>
-
-<!-- ═══ MOBILE TOP BAR ═══ -->
-<div class="nav-top">
-  <div class="nav-top-title">GPS<span>Tracker</span> · <span id="mobileClock">--:--:--</span></div>
-</div>
-
-<!-- ═══ SIDEBAR OVERLAY ═══ -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-<!-- ═══════════════════════════════════════════════════
-     SIDEBAR
-     ═══════════════════════════════════════════════════ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
-        <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
-        <path d="M12 2v4" stroke-width="1.5"/><path d="M12 18v4" stroke-width="1.5"/>
-        <path d="M2 12h4" stroke-width="1.5"/><path d="M18 12h4" stroke-width="1.5"/>
-        <path d="M4.93 4.93l2.83 2.83" stroke-width="1.5"/><path d="M16.24 16.24l2.83 2.83" stroke-width="1.5"/>
-        <path d="M4.93 19.07l2.83-2.83" stroke-width="1.5"/><path d="M16.24 7.76l2.83-2.83" stroke-width="1.5"/>
-      </svg>
-    </div>
-    <div class="sidebar-title">GPS<span>Tracker</span></div>
-    <span class="sidebar-badge">LIVE</span>
-  </div>
-
-  <nav class="sidebar-nav">
-    <div class="sidebar-label">Navigation</div>
-
-    <!-- Dashboard -->
-    <button class="sidebar-item active" data-section="overview" onclick="switchSection('overview')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.8"/>
-        <rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.8"/>
-        <rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.8"/>
-        <rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.8"/>
-        <circle cx="6.5" cy="6.5" r="1" fill="currentColor" opacity="0.4"/>
-      </svg>
-      Dashboard
-    </button>
-
-    <!-- Tracking Links -->
-    <button class="sidebar-item" data-section="links" onclick="switchSection('links')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke-width="1.8"/>
-        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke-width="1.8"/>
-        <circle cx="8" cy="16" r="1.5" fill="currentColor" opacity="0.3"/>
-        <circle cx="16" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>
-      </svg>
-      Tracking Links
-      <span class="count-badge" id="sidebarLinkCount">0</span>
-    </button>
-
-    <!-- Photos -->
-    <button class="sidebar-item" data-section="photos" onclick="switchSection('photos')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="1.8"/>
-        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" opacity="0.4"/>
-        <polyline points="21 15 16 10 5 21" stroke-width="1.8"/>
-        <circle cx="16" cy="8" r="2" fill="currentColor" opacity="0.2"/>
-      </svg>
-      Photos
-      <span class="count-badge" id="sidebarPhotoCount">0</span>
-    </button>
-
-    <!-- Live Map -->
-    <button class="sidebar-item" data-section="map" onclick="switchSection('map')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" stroke-width="1.8"/>
-        <line x1="8" y1="2" x2="8" y2="18" stroke-width="1.8"/>
-        <line x1="16" y1="6" x2="16" y2="22" stroke-width="1.8"/>
-        <circle cx="8" cy="10" r="1.5" fill="currentColor" opacity="0.3"/>
-        <circle cx="16" cy="14" r="1.5" fill="currentColor" opacity="0.3"/>
-      </svg>
-      Live Map
-    </button>
-
-    <!-- Android Devices -->
-    <button class="sidebar-item" data-section="android" onclick="switchSection('android')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="1.8"/>
-        <circle cx="12" cy="10" r="3" stroke-width="1.8"/>
-        <path d="M9 10l-2 4" stroke-width="1.8"/>
-        <path d="M15 10l2 4" stroke-width="1.8"/>
-        <line x1="9" y1="15" x2="15" y2="15" stroke-width="1.8"/>
-        <circle cx="12" cy="20" r="1.5" fill="currentColor" opacity="0.3"/>
-      </svg>
-      Android
-      <span class="count-badge" id="sidebarAndroidCount">0</span>
-    </button>
-
-    <!-- Settings -->
-    <button class="sidebar-item" data-section="settings" onclick="switchSection('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3" stroke-width="1.8"/>
-        <path d="M12 1v2" stroke-width="1.8"/>
-        <path d="M12 21v2" stroke-width="1.8"/>
-        <path d="M4.22 4.22l1.42 1.42" stroke-width="1.8"/>
-        <path d="M18.36 18.36l1.42 1.42" stroke-width="1.8"/>
-        <path d="M1 12h2" stroke-width="1.8"/>
-        <path d="M21 12h2" stroke-width="1.8"/>
-        <path d="M4.22 19.78l1.42-1.42" stroke-width="1.8"/>
-        <path d="M18.36 5.64l1.42-1.42" stroke-width="1.8"/>
-      </svg>
-      Settings
-    </button>
-  </nav>
-
-  <!-- Sidebar Footer: Logout -->
-  <div class="sidebar-footer">
-    <a href="/logout" class="sidebar-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-width="1.8"/>
-        <polyline points="16 17 21 12 16 7" stroke-width="1.8"/>
-        <line x1="21" y1="12" x2="9" y2="12" stroke-width="1.8"/>
-      </svg>
-      Logout
-    </a>
-  </div>
-</aside>
-
-<!-- ═══════════════════════════════════════════════════
-     MAIN WRAP
-     ═══════════════════════════════════════════════════ -->
-<div class="main-wrap">
-
-  <!-- ===== SECTION: Overview (Dashboard) ===== -->
-  <div class="main-content section-content active" id="sec-overview">
-    <div class="hero">
-      <h1>Monitoring <span class="highlight">Dashboard</span></h1>
-      <p>Real-time GPS tracking analytics &amp; link management</p>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="glow-orb glow-blue"></div>
-        <div class="stat-icon icon-bg-blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="1.5"/>
-            <circle cx="9" cy="9" r="2" fill="currentColor" opacity="0.4"/>
-            <circle cx="15" cy="15" r="2" fill="currentColor" opacity="0.4"/>
-            <path d="M12 7v10" stroke-width="1.5"/>
-            <path d="M7 12h10" stroke-width="1.5"/>
-            <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="totalLinks">—</div>
-        <div class="stat-label">Total Links</div>
+    <!-- ===== SECTION: Overview ===== -->
+    <div class="section-content active" id="sec-overview">
+      <div class="hero">
+        <h1>Monitoring <span class="highlight">Dashboard</span></h1>
+        <p>Real-time GPS tracking analytics &amp; link management</p>
       </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-green"></div>
-        <div class="stat-icon icon-bg-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 12l2 2 4-4" stroke-width="2.5"/>
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="activeLinks">—</div>
-        <div class="stat-label">Active Links</div>
-      </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-purple"></div>
-        <div class="stat-icon icon-bg-purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
-            <path d="M12 2v3" stroke-width="1.5"/>
-            <path d="M12 19v3" stroke-width="1.5"/>
-            <path d="M2 12h3" stroke-width="1.5"/>
-            <path d="M19 12h3" stroke-width="1.5"/>
-            <circle cx="12" cy="12" r="4" fill="currentColor" opacity="0.12" stroke-width="1.5"/>
-            <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="totalEvents">—</div>
-        <div class="stat-label">GPS Events</div>
-      </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-orange"></div>
-        <div class="stat-icon icon-bg-orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/>
-            <path d="M16 2v4" stroke-width="1.5"/>
-            <path d="M8 2v4" stroke-width="1.5"/>
-            <path d="M3 10h18" stroke-width="1.5"/>
-            <polyline points="9 16 11 14 13 16 15 13" stroke-width="2"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="todayEvents"><span class="prefix">—</span></div>
-        <div class="stat-label">Today's Events</div>
-      </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-amber"></div>
-        <div class="stat-icon icon-bg-orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-            <line x1="15" y1="15" x2="18" y2="15" stroke-width="2.5"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="totalPhotos">—</div>
-        <div class="stat-label">Photos Captured</div>
-      </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-cyan"></div>
-        <div class="stat-icon icon-bg-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="1.5"/>
-            <circle cx="12" cy="10" r="3" stroke-width="1.5"/>
-            <path d="M9 10l-2 4" stroke-width="1.5"/>
-            <path d="M15 10l2 4" stroke-width="1.5"/>
-            <line x1="9" y1="15" x2="15" y2="15" stroke-width="1.5"/>
-            <circle cx="12" cy="20" r="1" fill="currentColor" opacity="0.5"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="totalAndroid"><span class="prefix">📱</span> <span id="totalAndroidCount">—</span></div>
-        <div class="stat-label">Android Devices</div>
-      </div>
-      <div class="stat-card">
-        <div class="glow-orb glow-rose"></div>
-        <div class="stat-icon icon-bg-rose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-3-3.87" stroke-width="1.5"/>
-            <path d="M7 21v-2a4 4 0 0 1 3-3.87" stroke-width="1.5"/>
-            <circle cx="12" cy="7" r="4" stroke-width="1.5" fill="currentColor" opacity="0.12"/>
-            <circle cx="12" cy="7" r="2" fill="currentColor" opacity="0.4"/>
-            <path d="M20 8c.5-1.5.5-2.5 0-4" stroke-width="1.5"/>
-            <path d="M22 10c1-2.5 1-5 0-8" stroke-width="1.5"/>
-            <path d="M4 8c-.5-1.5-.5-2.5 0-4" stroke-width="1.5"/>
-            <path d="M2 10c-1-2.5-1-5 0-8" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <div class="stat-value" id="totalUsers">—</div>
-        <div class="stat-label">Telegram Users</div>
-      </div>
-    </div>
 
-    <!-- Recent Events -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
-            <polyline points="12 6 12 12 14 10" stroke-width="2"/>
-            <path d="M16 16l2 2" stroke-width="2"/><path d="M6 16l-2 2" stroke-width="2"/>
-            <path d="M8 18l-1 3" stroke-width="1.5"/><path d="M16 18l1 3" stroke-width="1.5"/>
-          </svg>
-          Recent GPS Events
-          <span class="section-count" id="eventCount">0</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Link ID</th>
-                <th>Name</th>
-                <th>Coordinates</th>
-                <th>Accuracy</th>
-                <th>Photo</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody id="eventsBody">
-              <tr><td colspan="6" class="loading-row">
-                <div class="loading-spinner"><div class="spinner"></div> Loading events...</div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- All Links -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="1.5"/>
-            <line x1="8" y1="21" x2="16" y2="21" stroke-width="1.5"/>
-            <line x1="12" y1="17" x2="12" y2="21" stroke-width="1.5"/>
-            <circle cx="7" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <circle cx="12" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <circle cx="17" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <path d="M7 12v2" stroke-width="1.5"/><path d="M12 12v2" stroke-width="1.5"/><path d="M17 12v2" stroke-width="1.5"/>
-          </svg>
-          Tracking Links
-          <span class="section-count" id="linkCount">0</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th><th>Title</th><th>Events</th><th>Status</th><th>Created</th><th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="linksBody">
-              <tr><td colspan="6" class="loading-row">
-                <div class="loading-spinner"><div class="spinner"></div> Loading links...</div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Map -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="1.5"/>
-            <circle cx="12" cy="10" r="3" stroke-width="1.5" fill="currentColor" opacity="0.2"/>
-            <circle cx="12" cy="10" r="1.5" fill="currentColor"/>
-          </svg>
-          Live Location Overview
-        </div>
-      </div>
-      <div class="card">
-        <div class="map-container" id="mapContent">
-          <div class="loading-row">
-            <div class="loading-spinner"><div class="spinner"></div> Loading map...</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> <!-- /sec-overview -->
-
-  <!-- ===== SECTION: Links ===== -->
-  <div class="main-content section-content" id="sec-links">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="1.5"/>
-            <line x1="8" y1="21" x2="16" y2="21" stroke-width="1.5"/>
-            <line x1="12" y1="17" x2="12" y2="21" stroke-width="1.5"/>
-            <circle cx="7" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <circle cx="12" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <circle cx="17" cy="10" r="2" stroke-width="1.5" fill="currentColor" opacity="0.3"/>
-            <path d="M7 12v2" stroke-width="1.5"/><path d="M12 12v2" stroke-width="1.5"/><path d="M17 12v2" stroke-width="1.5"/>
-          </svg>
-          Tracking Links
-          <span class="section-count" id="linkCount">0</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>ID</th><th>Name</th><th>Events</th><th>Status</th><th>Created</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="linksBody">
-              <tr><td colspan="6" class="loading-row">
-                <div class="loading-spinner"><div class="spinner"></div> Loading links...</div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SECTION: Photos ===== -->
-  <div class="main-content section-content" id="sec-photos">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          Photo Gallery
-          <span class="section-count" id="photoCountHeader">0</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="photo-grid" id="photoGrid">
-          <div class="loading-row">
-            <div class="loading-spinner"><div class="spinner"></div> Loading photos...</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SECTION: Map ===== -->
-  <div class="main-content section-content" id="sec-map">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-            <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
-          </svg>
-          Live Location
-        </div>
-      </div>
-      <div class="card">
-        <div class="map-container" id="mapContent">
-          <div class="loading-row">
-            <div class="loading-spinner"><div class="spinner"></div> Loading map...</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SECTION: Android Devices ===== -->
-  <div class="main-content section-content" id="sec-android">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-            <path d="M9 10l-2 4"/><path d="M15 10l2 4"/><line x1="9" y1="15" x2="15" y2="15"/>
-          </svg>
-          Android Device Reports
-          <span class="section-count" id="androidCountHeader">0</span>
-        </div>
-        <a href="/apk/download" class="section-action">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download APK
-        </a>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Device ID</th><th>Model</th><th>Android</th><th>Battery</th>
-                <th>Location</th><th>Apps</th><th>Reported</th>
-              </tr>
-            </thead>
-            <tbody id="androidBody">
-              <tr><td colspan="7" class="loading-row">
-                <div class="loading-spinner"><div class="spinner"></div> Loading device reports...</div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SECTION: Settings ===== -->
-  <div class="main-content section-content" id="sec-settings">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v2"/><path d="M12 21v2"/>
-            <path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/>
-            <path d="M1 12h2"/><path d="M21 12h2"/>
-            <path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/>
-          </svg>
-          Settings &amp; Info
-        </div>
-      </div>
-      <div class="card">
-        <div class="settings-grid">
-          <div class="setting-item">
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
             </svg>
-            <div class="setting-body">
-              <span class="setting-label">Dashboard Token</span>
-              <span class="setting-value" id="settingsToken">••••••••</span>
-            </div>
           </div>
-          <div class="setting-item">
+          <div class="stat-num" id="totalLinks">—</div>
+          <div class="stat-label">Total Links</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 12l2 2 4-4"/>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="activeLinks">—</div>
+          <div class="stat-label">Active Links</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              <path d="M12 2v4"/><path d="M12 18v4"/>
+              <path d="M2 12h4"/><path d="M18 12h4"/>
             </svg>
-            <div class="setting-body">
-              <span class="setting-label">Base URL</span>
-              <span class="setting-value" id="settingsBaseUrl">—</span>
-            </div>
           </div>
-          <div class="setting-item">
+          <div class="stat-num" id="totalEvents">—</div>
+          <div class="stat-label">GPS Events</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4"/><path d="M8 2v4"/>
+              <path d="M3 10h18"/>
             </svg>
-            <div class="setting-body">
-              <span class="setting-label">Bot Status</span>
-              <span class="bot-status online"><span class="status-dot"></span> Online</span>
-            </div>
           </div>
-          <div class="setting-item">
+          <div class="stat-num" id="todayEvents"><span class="prefix">—</span></div>
+          <div class="stat-label">Today's Events</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-              <line x1="9" y1="21" x2="9" y2="9"/>
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
             </svg>
-            <div class="setting-body">
-              <span class="setting-label">Dashboard Version</span>
-              <span class="setting-value">2.0 — Glass UI</span>
+          </div>
+          <div class="stat-num" id="totalPhotos">—</div>
+          <div class="stat-label">Photos Captured</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalAndroid"><span class="prefix">📱</span> <span id="totalAndroidCount">—</span></div>
+          <div class="stat-label">Android Devices</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M7 21v-2a4 4 0 0 1 3-3.87"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalUsers">—</div>
+          <div class="stat-label">Telegram Users</div>
+        </div>
+      </div>
+
+      <!-- Recent Events -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 14 10"/>
+            </svg>
+            Recent GPS Events
+            <span class="section-count" id="eventCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Link ID</th>
+                  <th>Name</th>
+                  <th>Coordinates</th>
+                  <th>Accuracy</th>
+                  <th>Photo</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="eventsBody">
+                <tr><td colspan="6" class="loading-row">
+                  <div class="loading-spinner"><div class="spinner"></div> Loading events...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Links -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            Tracking Links
+            <span class="section-count" id="linkCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th><th>Title</th><th>Events</th><th>Status</th><th>Created</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="linksBody">
+                <tr><td colspan="6" class="loading-row">
+                  <div class="loading-spinner"><div class="spinner"></div> Loading links...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Map -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            Live Location Overview
+          </div>
+        </div>
+        <div class="card">
+          <div class="map-container" id="mapContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading map...</div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- ===== SECTION: Links ===== -->
+    <div class="section-content" id="sec-links">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            All Tracking Links
+            <span class="section-count" id="linkCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Name</th><th>Events</th><th>Status</th><th>Created</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="linksBody">
+                <tr><td colspan="6" class="loading-row">
+                  <div class="loading-spinner"><div class="spinner"></div> Loading links...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Photos ===== -->
+    <div class="section-content" id="sec-photos">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Photo Gallery
+            <span class="section-count" id="photoCountHeader">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="photo-grid" id="photoGrid">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading photos...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Map ===== -->
+    <div class="section-content" id="sec-map">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            Live Location
+          </div>
+        </div>
+        <div class="card">
+          <div class="map-container" id="mapContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading map...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Android ===== -->
+    <div class="section-content" id="sec-android">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Android Device Reports
+            <span class="section-count" id="androidCountHeader">0</span>
+          </div>
+          <a href="/apk/download" class="section-action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download APK
+          </a>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Device ID</th><th>Model</th><th>Android</th><th>Battery</th>
+                  <th>Location</th><th>Apps</th><th>Reported</th>
+                </tr>
+              </thead>
+              <tbody id="androidBody">
+                <tr><td colspan="7" class="loading-row">
+                  <div class="loading-spinner"><div class="spinner"></div> Loading device reports...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Settings ===== -->
+    <div class="section-content" id="sec-settings">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v2"/><path d="M12 21v2"/>
+              <path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/>
+              <path d="M1 12h2"/><path d="M21 12h2"/>
+              <path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/>
+            </svg>
+            Settings &amp; Info
+          </div>
+        </div>
+        <div class="card">
+          <div class="settings-grid">
+            <div class="setting-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <div class="setting-body">
+                <span class="setting-label">Dashboard Token</span>
+                <span class="setting-value" id="settingsToken">••••••••</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <div class="setting-body">
+                <span class="setting-label">Base URL</span>
+                <span class="setting-value" id="settingsBaseUrl">—</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <div class="setting-body">
+                <span class="setting-label">Bot Status</span>
+                <span class="bot-status online"><span class="status-dot"></span> Online</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="9" y1="21" x2="9" y2="9"/>
+              </svg>
+              <div class="setting-body">
+                <span class="setting-label">Dashboard Version</span>
+                <span class="setting-value">3.0 — Blue/Gold</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- /main-content -->
 
   <!-- ═══ FOOTER ═══ -->
-  <footer class="footer" style="margin-left:0">
+  <footer class="footer">
     <div class="footer-inner">
       <span id="footerStatus">● Connecting...</span>
       <span class="sep">·</span>
@@ -1629,7 +1485,9 @@ tbody tr:hover td { background: rgba(99,102,241,0.03); }
     </div>
   </footer>
 
-</div> <!-- /main-wrap -->
+</div> <!-- /main -->
+
+</div> <!-- /app -->
 
 <!-- ═══ PHOTO MODAL ═══ -->
 <div class="modal-overlay" id="photoModal">
@@ -1640,7 +1498,7 @@ tbody tr:hover td { background: rgba(99,102,241,0.03); }
     </div>
     <div class="modal-info">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
         <circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
       </svg>
@@ -1663,8 +1521,8 @@ function toggleSidebar() {
 }
 
 function switchSection(name) {
-  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-  document.querySelector(`.sidebar-item[data-section="${name}"]`)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.nav-item[data-section="${name}"]`)?.classList.add('active');
   document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
   document.getElementById(`sec-${name}`)?.classList.add('active');
   if (window.innerWidth <= 768) {
@@ -1679,8 +1537,6 @@ function updateClock() {
   const t = now.toLocaleTimeString('id-ID', { hour12: false });
   const el = document.getElementById('clock');
   if (el) el.textContent = t;
-  const mel = document.getElementById('mobileClock');
-  if (mel) mel.textContent = t;
 }
 updateClock();
 setInterval(updateClock, 1000);
@@ -1695,13 +1551,13 @@ async function fetchDashboard() {
   } catch (e) {
     console.error('Fetch error:', e);
     document.querySelectorAll('.loading-row').forEach(el => {
-      el.innerHTML = `<td colspan="6" class="error-state">
-        <p>⚠ Connection lost</p>
-        <button class="btn-retry" onclick="fetchDashboard()">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          Retry
-        </button>
-      </td>`;
+      el.innerHTML = '<td colspan="6" class="error-state">' +
+        '<p>⚠ Connection lost</p>' +
+        '<button class="btn-retry" onclick="fetchDashboard()">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
+          ' Retry' +
+        '</button>' +
+      '</td>';
     });
   }
 }
@@ -1733,13 +1589,13 @@ function render(data) {
   document.getElementById('androidCountHeader').textContent = data.total_android || 0;
 
   // Sidebar badges
-  const se = document.getElementById('sidebarEventCount');
+  var se = document.getElementById('sidebarEventCount');
   if (se) se.textContent = data.total_events || 0;
-  const sl = document.getElementById('sidebarLinkCount');
+  var sl = document.getElementById('sidebarLinkCount');
   if (sl) sl.textContent = data.total_links || 0;
-  const sp = document.getElementById('sidebarPhotoCount');
+  var sp = document.getElementById('sidebarPhotoCount');
   if (sp) sp.textContent = data.total_photos || 0;
-  const sa = document.getElementById('sidebarAndroidCount');
+  var sa = document.getElementById('sidebarAndroidCount');
   if (sa) sa.textContent = data.total_android || 0;
 
   document.getElementById('footerStatus').textContent = '● Live';
@@ -1748,137 +1604,136 @@ function render(data) {
   }
 
   // Settings info
-  const st = document.getElementById('settingsToken');
+  var st = document.getElementById('settingsToken');
   if (st) st.textContent = TOKEN.slice(0, 8) + '…' + TOKEN.slice(-4);
-  const su = document.getElementById('settingsBaseUrl');
+  var su = document.getElementById('settingsBaseUrl');
   if (su) {
     su.textContent = window.location.origin || '—';
   }
 
   // Recent Events
-  const evs = data.recent_events || [];
-  const evBody = document.getElementById('eventsBody');
+  var evs = data.recent_events || [];
+  var evBody = document.getElementById('eventsBody');
   if (evs.length === 0) {
-    evBody.innerHTML = `<tr><td colspan="6" class="empty-data">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <p>No tracking events yet</p>
-    </td></tr>`;
+    evBody.innerHTML = '<tr><td colspan="6" class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      '<p>No tracking events yet</p>' +
+    '</td></tr>';
   } else {
-    evBody.innerHTML = evs.map(e => `<tr>
-      <td><span class="td-id"><span class="hash">#</span>${e.tracking_id || '-'}</span></td>
-      <td class="td-name">${e.nama || '—'}</td>
-      <td class="td-coords">${Number(e.latitude).toFixed(6)}<span style="opacity:0.3">, </span>${Number(e.longitude).toFixed(6)}</td>
-      <td><span class="td-acc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> ${e.accuracy || '?'}m</span></td>
-      <td class="td-photo">${e.has_photo ? `<button class="photo-btn" onclick="openPhoto('${e.tracking_id}')" title="Lihat Foto"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>` : `<span class="no-photo">—</span>`}</td>
-      <td class="td-time">${(e.timestamp || '').slice(0,19) || '-'}</td>
-    </tr>`).join('');
+    evBody.innerHTML = evs.map(function(e) {
+      return '<tr>' +
+        '<td><span class="td-id"><span class="hash">#</span>' + (e.tracking_id || '-') + '</span></td>' +
+        '<td class="td-name">' + (e.nama || '—') + '</td>' +
+        '<td class="td-coords">' + Number(e.latitude).toFixed(6) + '<span style="opacity:0.3">, </span>' + Number(e.longitude).toFixed(6) + '</td>' +
+        '<td><span class="td-acc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> ' + (e.accuracy || '?') + 'm</span></td>' +
+        '<td class="td-photo">' + (e.has_photo ? '<button class="photo-btn" onclick="openPhoto(\'' + e.tracking_id + '\')" title="Lihat Foto"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>' : '<span class="no-photo">—</span>') + '</td>' +
+        '<td class="td-time">' + ((e.timestamp || '').slice(0,19) || '-') + '</td>' +
+      '</tr>';
+    }).join('');
   }
 
   // Links
-  const links = data.links || [];
-  const linkBody = document.getElementById('linksBody');
+  var links = data.links || [];
+  var linkBody = document.getElementById('linksBody');
   if (links.length === 0) {
-    linkBody.innerHTML = `<tr><td colspan="6" class="empty-data">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      <p>No tracking links created</p>
-      <div class="sub">Create a link via the Telegram bot to get started</div>
-    </td></tr>`;
+    linkBody.innerHTML = '<tr><td colspan="6" class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+      '<p>No tracking links created</p>' +
+      '<div class="sub">Create a link via the Telegram bot to get started</div>' +
+    '</td></tr>';
   } else {
-    linkBody.innerHTML = links.map(l => {
-      const isActive = l.is_active;
-      const stClass = isActive ? 'badge-active' : 'badge-inactive';
-      const stText = isActive ? 'Active' : 'Inactive';
-      const mapUrl = `/map/${l.tracking_id}`;
-      const gUrl = l.lat ? `https://www.google.com/maps?q=${l.lat},${l.lng}` : '#';
-      return `<tr>
-        <td><span class="td-id"><span class="hash">#</span>${l.tracking_id}</span></td>
-        <td class="td-name">${l.title || '—'}</td>
-        <td><span class="td-acc" style="font-weight:600;color:var(--accent-primary)">${l.event_count || 0}</span></td>
-        <td><span class="badge-status ${stClass}"><span class="dot"></span> ${stText}</span></td>
-        <td class="td-time">${(l.created_at || '').slice(0,10)}</td>
-        <td>
-          <div class="td-actions">
-            <a href="${mapUrl}" target="_blank" class="btn-action btn-map">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-              Map
-            </a>
-            ${l.lat ? `<a href="${gUrl}" target="_blank" class="btn-action btn-gmaps">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              GPS
-            </a>` : ''}
-          </div>
-        </td>
-      </tr>`;
+    linkBody.innerHTML = links.map(function(l) {
+      var isActive = l.is_active;
+      var stClass = isActive ? 'badge-active' : 'badge-inactive';
+      var stText = isActive ? 'Active' : 'Inactive';
+      var mapUrl = '/map/' + l.tracking_id;
+      var gUrl = l.lat ? 'https://www.google.com/maps?q=' + l.lat + ',' + l.lng : '#';
+      return '<tr>' +
+        '<td><span class="td-id"><span class="hash">#</span>' + l.tracking_id + '</span></td>' +
+        '<td class="td-name">' + (l.title || '—') + '</td>' +
+        '<td><span class="td-acc" style="font-weight:600;color:var(--blue)">' + (l.event_count || 0) + '</span></td>' +
+        '<td><span class="badge-status ' + stClass + '"><span class="dot"></span> ' + stText + '</span></td>' +
+        '<td class="td-time">' + ((l.created_at || '').slice(0,10)) + '</td>' +
+        '<td>' +
+          '<div class="td-actions">' +
+            '<a href="' + mapUrl + '" target="_blank" class="btn-action btn-map">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>' +
+              ' Map' +
+            '</a>' +
+            (l.lat ? '<a href="' + gUrl + '" target="_blank" class="btn-action btn-gmaps">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+              ' GPS' +
+            '</a>' : '') +
+          '</div>' +
+        '</td>' +
+      '</tr>';
     }).join('');
   }
 
   // Map
-  const mapDiv = document.getElementById('mapContent');
+  var mapDiv = document.getElementById('mapContent');
   if (data.latest_location) {
-    const ll = data.latest_location;
-    mapDiv.innerHTML = `
-      <div class="map-frame">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d${ll.lng}!3d${ll.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1"
-          allowfullscreen="" loading="lazy">
-        </iframe>
-      </div>
-      <div class="map-info">
-        <div class="map-coords"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}</div>
-        <div class="map-meta">
-          <span>🆔 ${ll.tid}</span>
-          <span>🕐 ${(ll.ts || '').slice(0,19)}</span>
-        </div>
-      </div>`;
+    var ll = data.latest_location;
+    mapDiv.innerHTML =
+      '<div class="map-frame">' +
+        '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d' + ll.lng + '!3d' + ll.lat + '!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1" allowfullscreen="" loading="lazy"></iframe>' +
+      '</div>' +
+      '<div class="map-info">' +
+        '<div class="map-coords"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ' + ll.lat.toFixed(6) + ', ' + ll.lng.toFixed(6) + '</div>' +
+        '<div class="map-meta">' +
+          '<span>🆔 ' + ll.tid + '</span>' +
+          '<span>🕐 ' + ((ll.ts || '').slice(0,19)) + '</span>' +
+        '</div>' +
+      '</div>';
   } else {
-    mapDiv.innerHTML = `<div class="empty-data">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-      <p>No location data available</p>
-      <div class="sub">Map will appear once GPS events are received</div>
-    </div>`;
+    mapDiv.innerHTML = '<div class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>' +
+      '<p>No location data available</p>' +
+      '<div class="sub">Map will appear once GPS events are received</div>' +
+    '</div>';
   }
   renderPhotos(data);
   renderAndroidDevices();
 }
 
 // ── Android Devices ──
-let androidDataCache = [];
+var androidDataCache = [];
 async function renderAndroidDevices() {
   try {
-    const resp = await fetch(`/api/android-devices?token=${TOKEN}`);
+    var resp = await fetch('/api/android-devices?token=' + TOKEN);
     if (!resp.ok) return;
-    const data = await resp.json();
-    const devices = data.devices || [];
+    var data = await resp.json();
+    var devices = data.devices || [];
     androidDataCache = devices;
-    const body = document.getElementById('androidBody');
+    var body = document.getElementById('androidBody');
     if (!body) return;
     if (devices.length === 0) {
-      body.innerHTML = `<tr><td colspan="7" class="empty-data">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <p>No Android devices reported</p>
-        <div class="sub">Install the APK on target devices to see reports here</div>
-      </td></tr>`;
+      body.innerHTML = '<tr><td colspan="7" class="empty-data">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+        '<p>No Android devices reported</p>' +
+        '<div class="sub">Install the APK on target devices to see reports here</div>' +
+      '</td></tr>';
       return;
     }
-    body.innerHTML = devices.map(d => {
-      const report = d.data;
-      const device = report.device || {};
-      const loc = report.location || {};
-      const battery = report.battery || {};
-      const apps = report.installed_apps || [];
-      const model = [device.manufacturer, device.model].filter(Boolean).join(' ') || 'Unknown';
-      const androidVer = device.android_version || '?';
-      const battPct = battery.percentage !== undefined ? Math.round(battery.percentage) + '%' : '—';
-      const latLng = loc.lat ? `${Number(loc.lat).toFixed(4)}, ${Number(loc.lng).toFixed(4)}` : '—';
-      return `<tr>
-        <td><span class="td-id"><span class="hash">🤖</span>${(d.device_id || '?').slice(0,12)}…</span></td>
-        <td class="td-name">${escHtml(model)}</td>
-        <td><span class="td-acc">🤖 ${escHtml(androidVer)}</span></td>
-        <td>${battPct}</td>
-        <td class="td-coords">${latLng}</td>
-        <td><span class="td-acc" style="font-weight:600;color:var(--accent-primary)">${apps.length}</span></td>
-        <td class="td-time">${(d.timestamp || '').slice(0,19) || '-'}</td>
-      </tr>`;
+    body.innerHTML = devices.map(function(d) {
+      var report = d.data;
+      var device = report.device || {};
+      var loc = report.location || {};
+      var battery = report.battery || {};
+      var apps = report.installed_apps || [];
+      var model = [device.manufacturer, device.model].filter(Boolean).join(' ') || 'Unknown';
+      var androidVer = device.android_version || '?';
+      var battPct = battery.percentage !== undefined ? Math.round(battery.percentage) + '%' : '—';
+      var latLng = loc.lat ? Number(loc.lat).toFixed(4) + ', ' + Number(loc.lng).toFixed(4) : '—';
+      return '<tr>' +
+        '<td><span class="td-id"><span class="hash">🤖</span>' + (d.device_id || '?').slice(0,12) + '…</span></td>' +
+        '<td class="td-name">' + escHtml(model) + '</td>' +
+        '<td><span class="td-acc">🤖 ' + escHtml(androidVer) + '</span></td>' +
+        '<td>' + battPct + '</td>' +
+        '<td class="td-coords">' + latLng + '</td>' +
+        '<td><span class="td-acc" style="font-weight:600;color:var(--blue)">' + apps.length + '</span></td>' +
+        '<td class="td-time">' + ((d.timestamp || '').slice(0,19) || '-') + '</td>' +
+      '</tr>';
     }).join('');
   } catch (e) {
     console.error('Android fetch error:', e);
@@ -1898,42 +1753,38 @@ function escHtml(s) {
 
 // ── Photo Grid ──
 function renderPhotos(data) {
-  const grid = document.getElementById('photoGrid');
+  var grid = document.getElementById('photoGrid');
   if (!grid) return;
-  const evs = data.recent_events || [];
-  const withPhotos = evs.filter(e => e.has_photo);
+  var evs = data.recent_events || [];
+  var withPhotos = evs.filter(function(e) { return e.has_photo; });
   if (withPhotos.length === 0) {
-    grid.innerHTML = `<div class="empty-data">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      <p>No photos captured yet</p>
-      <div class="sub">Photos appear when someone opens a tracking link and grants camera access</div>
-    </div>`;
+    grid.innerHTML = '<div class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+      '<p>No photos captured yet</p>' +
+      '<div class="sub">Photos appear when someone opens a tracking link and grants camera access</div>' +
+    '</div>';
     return;
   }
-  grid.innerHTML = withPhotos.map(e => `
-    <div class="photo-grid-item" onclick="openPhoto('${e.tracking_id}')">
-      <div class="photo-grid-img">
-        <img src="/api/photo/${e.tracking_id}" alt="Photo" loading="lazy">
-      </div>
-      <div class="photo-grid-info">
-        <span class="photo-grid-id">#${e.tracking_id}</span>
-        <span class="photo-grid-time">${(e.timestamp || '').slice(0,19)}</span>
-      </div>
-    </div>
-  `).join('');
+  grid.innerHTML = withPhotos.map(function(e) {
+    return '<div class="photo-grid-item" onclick="openPhoto(\'' + e.tracking_id + '\')">' +
+      '<div class="photo-grid-img">' +
+        '<img src="/api/photo/' + e.tracking_id + '" alt="Photo" loading="lazy">' +
+      '</div>' +
+      '<div class="photo-grid-info">' +
+        '<span class="photo-grid-id">#' + e.tracking_id + '</span>' +
+        '<span class="photo-grid-time">' + ((e.timestamp || '').slice(0,19)) + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
-
-// ── Init ──
-fetchDashboard();
-setInterval(fetchDashboard, 10000);
 
 // ── Photo Modal ──
 function openPhoto(tid) {
-  const modal = document.getElementById('photoModal');
-  const img = document.getElementById('modalImg');
-  const info = document.getElementById('modalInfo');
-  img.src = `/api/photo/${tid}?t=${Date.now()}`;
-  info.textContent = `🆔 ${tid}`;
+  var modal = document.getElementById('photoModal');
+  var img = document.getElementById('modalImg');
+  var info = document.getElementById('modalInfo');
+  img.src = '/api/photo/' + tid + '?t=' + Date.now();
+  info.textContent = '🆔 ' + tid;
   modal.classList.add('active');
 }
 
@@ -1948,6 +1799,10 @@ document.getElementById('photoModal')?.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closePhoto();
 });
+
+// ── Init ──
+fetchDashboard();
+setInterval(fetchDashboard, 10000);
 </script>
 
 </body>
