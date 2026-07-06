@@ -250,10 +250,16 @@ async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🔋 Battery Info — status baterai\n"
             "📦 App List — daftar app terinstall\n"
             "🚀 Auto-start saat boot HP\n\n"
-            f"⬇️ [Download APK]({BASE_URL}/apk/download)\n"
-            f"📊 [Dashboard]({BASE_URL}/dashboard?token={DASHBOARD_TOKEN})"
+            "⬇️ *Download:*\n"
+            f"`{BASE_URL}/apk/download`\n\n"
+            "📊 *Dashboard:*\n"
+            f"`{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}`\n\n"
+            "Copy link di atas, buka di browser!"
         )
-        kb = [[InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download")]]
+        kb = [[
+            InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download"),
+            InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"),
+        ]]
         try:
             with open(banner_path, "rb") as f:
                 await context.bot.send_photo(chat_id=q.message.chat_id, photo=f,
@@ -591,9 +597,10 @@ async def cmd_apk(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📦 App List — daftar app terinstall\n"
         "🚀 Auto-start saat boot HP\n\n"
         "⬇️ *Download:*\n"
-        f"{BASE_URL}/apk/download\n\n"
+        f"`{BASE_URL}/apk/download`\n\n"
         "📊 *Dashboard:*\n"
-        f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"
+        f"`{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}`\n\n"
+        "Copy link di atas, buka di browser!"
     )
     kb = [[
         InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download"),
