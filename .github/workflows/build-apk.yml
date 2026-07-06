@@ -5,6 +5,7 @@ on:
     branches: [ '**' ]
     paths:
       - 'android/BansosService/**'
+      - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
 jobs:
