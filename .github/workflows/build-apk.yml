@@ -17,9 +17,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: '11'
+          distribution: 'microsoft'
       
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -32,7 +31,7 @@ jobs:
         run: |
           chmod +x build-apk.sh
           mkdir -p build/out build/obj build/gen build/dex-out
-          SDK_ROOT=$ANDROID_HOME bash build-apk.sh
+          bash build-apk.sh
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
