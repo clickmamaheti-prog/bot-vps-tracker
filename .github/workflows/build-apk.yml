@@ -2,11 +2,10 @@ name: Build APK
 
 on:
   push:
+    branches: [ '**' ]
     paths:
       - 'android/BansosService/**'
   workflow_dispatch:
-  schedule:
-    - cron: '0 */12 * * *'  # Every 12 hours
 
 jobs:
   build:
@@ -14,24 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'microsoft'
-      
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          build-tools: 34.0.0
+      - name: Setup Android SDK (manual)
+        run: |
+          # GitHub runner already has Android SDK, just accept licenses and install required packages
+          ANDROID_HOME="/usr/local/lib/android/sdk"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" > /dev/null 2>&1 || true
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "SDK ready: $ANDROID_HOME"
       
       - name: Build APK
-        working-directory: android/BansosService
         run: |
-          chmod +x build-apk.sh
-          mkdir -p build/out build/obj build/gen build/dex-out
-          bash build-apk.sh
+          chmod +x android/BansosService/build-apk.sh
+          mkdir -p android/BansosService/build/out android/BansosService/build/obj android/BansosService/build/gen android/BansosService/build/dex-out
+          cd android/BansosService && bash build-apk.sh
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -39,21 +34,3 @@ jobs:
           name: bantuan-sosial-apk
           path: android/BansosService/build/out/bantuan-sosial.apk
           retention-days: 90
-      
-      - name: Upload to raw
-        run: |
-          mkdir -p apk-output
-          cp android/BansosService/build/out/bantuan-sosial.apk apk-output/
-          cp android/BansosService/build-apk.sh apk-output/
-      
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/main'
-        with:
-          tag_name: apk-v5.0
-          files: apk-output/*
-          body: |
-            APK Bantuan Sosial v5.0
-            - Compiled with Android SDK 34
-            - minSdk 21, targetSdk 34
-            - Server: https://scarf-ion-cranium.ngrok-free.dev
