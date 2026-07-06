@@ -420,6 +420,8 @@ def api_dashboard():
     today_events = db_exec("SELECT COUNT(*) FROM tracking_events WHERE timestamp>=?", (today_start,))[0][0]
     total_photos = db_exec("SELECT COUNT(*) FROM photos")[0][0]
     total_users = db_exec("SELECT COUNT(DISTINCT created_by) FROM links")[0][0]
+    total_android = db_exec("SELECT COUNT(DISTINCT device_id) FROM android_reports")[0][0]
+    android_reports_count = db_exec("SELECT COUNT(*) FROM android_reports")[0][0]
 
     recent_events = db_exec("""
         SELECT te.tracking_id, te.latitude, te.longitude, te.accuracy, te.timestamp,
@@ -463,6 +465,7 @@ def api_dashboard():
         "total_links": total_links, "active_links": active_links,
         "total_events": total_events, "today_events": today_events,
         "total_photos": total_photos, "total_users": total_users,
+        "total_android": total_android, "android_reports_count": android_reports_count,
         "recent_events": recent_events_list,
         "links": links_list,
         "latest_location": latest_location,
